@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\UserNotificationCreated;
 use App\Models\AppNotification;
 use App\Models\Event;
 use App\Models\User;
@@ -18,13 +19,15 @@ class NotificationService
                 continue;
             }
 
-            AppNotification::create([
+            $notification = AppNotification::create([
                 'user_id' => $user->id,
                 'event_id' => $event?->id,
                 'title' => $title,
                 'body' => $body,
                 'type' => $type,
             ]);
+
+            UserNotificationCreated::dispatch($notification);
         }
     }
 

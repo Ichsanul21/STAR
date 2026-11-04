@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#0a2540">
+    @auth
+        @if (config('broadcasting.default') === 'reverb')
+            <meta name="user-id" content="{{ auth()->id() }}">
+            <meta name="reverb-key" content="{{ config('broadcasting.connections.reverb.key') }}">
+            <meta name="reverb-host" content="{{ config('broadcasting.connections.reverb.options.host') }}">
+            <meta name="reverb-port" content="{{ config('broadcasting.connections.reverb.options.port') }}">
+            <meta name="reverb-scheme" content="{{ config('broadcasting.connections.reverb.options.scheme') }}">
+        @endif
+    @endauth
     <link rel="manifest" href="/manifest.webmanifest">
     <title>{{ $title ?? 'STAR' }} · STAR</title>
     <script>
@@ -99,7 +108,7 @@
                 <a href="{{ route('notifications.index') }}" class="nav-item {{ request()->routeIs('notifications.*') ? 'is-active' : '' }}">
                     <x-icon name="bell" class="nav-icon" />
                     <span class="nav-label">Notifikasi</span>
-                    @if ($unread > 0)<span class="nav-badge">{{ $unread }}</span>@endif
+                    <span class="nav-badge {{ $unread > 0 ? '' : 'hidden' }}" data-notif-nav-badge>{{ $unread }}</span>
                 </a>
             @else
                 <div class="nav-section">Menu</div>
@@ -200,26 +209,26 @@
             <div class="sidebar-notif">
                 <div class="sidebar-notif-head">
                     <span class="sidebar-notif-title">Notifikasi</span>
-                    <span class="sidebar-notif-total">{{ $notifTotal }}</span>
+                    <span class="sidebar-notif-total" data-notif-total>{{ $notifTotal }}</span>
                 </div>
                 <a href="{{ route('notifications.index', ['type' => 'task']) }}" class="sidebar-notif-row {{ $notifType === 'task' ? 'is-active' : '' }}">
                     <span>Tugas</span>
-                    <span class="sidebar-notif-count">{{ $notifTask }}</span>
+                    <span class="sidebar-notif-count" data-notif-count="task">{{ $notifTask }}</span>
                 </a>
                 <a href="{{ route('notifications.index', ['type' => 'finance']) }}" class="sidebar-notif-row {{ $notifType === 'finance' ? 'is-active' : '' }}">
                     <span>Keuangan</span>
-                    <span class="sidebar-notif-count">{{ $notifFinance }}</span>
+                    <span class="sidebar-notif-count" data-notif-count="finance">{{ $notifFinance }}</span>
                 </a>
                 <a href="{{ route('notifications.index', ['type' => 'report']) }}" class="sidebar-notif-row {{ $notifType === 'report' ? 'is-active' : '' }}">
                     <span>Laporan</span>
-                    <span class="sidebar-notif-count">{{ $notifReport }}</span>
+                    <span class="sidebar-notif-count" data-notif-count="report">{{ $notifReport }}</span>
                 </a>
                 <a href="{{ route('notifications.index') }}" class="sidebar-notif-all">Lihat semua notifikasi</a>
             </div>
 
             <button type="button" class="sidebar-notif-mini" data-notif-trigger data-placement="right" aria-label="Notifikasi" aria-expanded="false" aria-controls="notificationPopover">
                 <x-icon name="bell" class="w-5 h-5" />
-                @if ($notifTotal > 0)<span class="sidebar-mini-badge">{{ $notifTotal }}</span>@endif
+                <span class="sidebar-mini-badge {{ $notifTotal > 0 ? '' : 'hidden' }}" data-notif-mini>{{ $notifTotal }}</span>
             </button>
         @endif
 
@@ -258,9 +267,7 @@
                 @endif
                 <a href="{{ route('notifications.index') }}" class="topbar-icon" aria-label="Notifikasi">
                     <x-icon name="bell" class="w-5 h-5" />
-                    @if ($notifTotal > 0)
-                        <span class="topbar-dot">{{ $notifTotal }}</span>
-                    @endif
+                    <span class="topbar-dot {{ $notifTotal > 0 ? '' : 'hidden' }}" data-notif-topbar>{{ $notifTotal }}</span>
                 </a>
                 <div class="topbar-user">
                     <div class="topbar-avatar">{{ strtoupper(substr($user?->name ?? 'S', 0, 1)) }}</div>
@@ -640,22 +647,22 @@ document.addEventListener('DOMContentLoaded', () => {
 @auth
     <div id="notificationPopover" class="notif-popover" role="dialog" aria-label="Notifikasi" hidden>
         <div class="notif-popover-head">
-            <div class="notif-popover-title">Notifikasi <span class="notif-popover-total">{{ $notifTotal }}</span></div>
+            <div class="notif-popover-title">Notifikasi <span class="notif-popover-total" data-notif-total>{{ $notifTotal }}</span></div>
         </div>
 
         @if (! $user?->isDealer())
             <div class="notif-popover-list">
                 <a href="{{ route('notifications.index', ['type' => 'task']) }}" class="notif-popover-row {{ $notifType === 'task' ? 'is-active' : '' }}">
                     <span>Tugas</span>
-                    <b>{{ $notifTask }}</b>
+                    <b data-notif-count="task">{{ $notifTask }}</b>
                 </a>
                 <a href="{{ route('notifications.index', ['type' => 'finance']) }}" class="notif-popover-row {{ $notifType === 'finance' ? 'is-active' : '' }}">
                     <span>Keuangan</span>
-                    <b>{{ $notifFinance }}</b>
+                    <b data-notif-count="finance">{{ $notifFinance }}</b>
                 </a>
                 <a href="{{ route('notifications.index', ['type' => 'report']) }}" class="notif-popover-row {{ $notifType === 'report' ? 'is-active' : '' }}">
                     <span>Laporan</span>
-                    <b>{{ $notifReport }}</b>
+                    <b data-notif-count="report">{{ $notifReport }}</b>
                 </a>
             </div>
         @endif

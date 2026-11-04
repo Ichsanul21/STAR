@@ -20,6 +20,8 @@
         "@tiptap/extension-placeholder": "^3.32.2",
         "@tiptap/starter-kit": "^3.32.2",
         "chart.js": "^4.6.1",
+        "laravel-echo": "^2.6.3",
+        "pusher-js": "^8.6.0",
         "tom-select": "^2.6.2"
     }
 }

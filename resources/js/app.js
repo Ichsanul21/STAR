@@ -1,5 +1,9 @@
 import './bootstrap';
 
+if (document.querySelector('meta[name="user-id"]')) {
+    import('./realtime');
+}
+
 if (document.querySelector('[data-rich-text]')) {
     import('./editor');
 }
