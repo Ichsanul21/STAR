@@ -1,0 +1,16 @@
+[Unit]
+Description=STAR scheduler
+After=network.target mysql.service redis-server.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=5
+WorkingDirectory=/var/www/star/current
+ExecStart=/usr/bin/php8.4 artisan schedule:work
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+[Unit]
+Description=STAR Reverb WebSocket server
+After=network.target redis-server.service
+Requires=redis-server.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=5
+WorkingDirectory=/var/www/star/current
+ExecStart=/usr/bin/php8.4 artisan reverb:start --host=127.0.0.1 --port=8080
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

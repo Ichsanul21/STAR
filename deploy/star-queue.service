@@ -1,0 +1,17 @@
+[Unit]
+Description=STAR queue worker
+After=network.target mysql.service redis-server.service
+Requires=mysql.service redis-server.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=5
+WorkingDirectory=/var/www/star/current
+ExecStart=/usr/bin/php8.4 artisan queue:work --sleep=3 --tries=3 --max-time=3600 --queue=high,default,media,reports,broadcast
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
