@@ -263,7 +263,7 @@ Use five templates consistently:
 | Dashboard | Overview | Greeting, 4 KPI, budget chart, task progress, quick actions, upcoming events, activity |
 | Events | Browse/filter | Cards/table, dealer, date, progress, budget health |
 | Event workspace | Run event | Header, tabs, progress, alerts |
-| Tasks | Execute | Board/list/Gantt/graph, filters, task drawer |
+| Tasks | Execute | Board/list/Gantt/S-Curve/graph, filters, task drawer |
 | Budget | Control RAB | Table, version selector, variance, finalize |
 | Expenses | Record spend | Quick entry, receipt, approval |
 | Payments | Track client | Invoice, aging, record payment |
@@ -416,8 +416,9 @@ Don't:
 
 ### Gantt
 - Zoom: auto, day, week, month.
-- Today marker, phase headers, per-bar progress fill.
-- Managers drag a bar horizontally to shift start/due dates (snapped to days, saved via JSON PATCH).
+- Sticky task column, month + day/week header, phase/group headers, weekend shading, today marker, status colors, per-bar progress fill.
+- Clicking a bar or row opens a detail modal (name, description, start, due, priority, assignee). No drag-reschedule.
+- S-Curve view: planned (task weight accrued from start to due) vs actual (completed task weight), with current completion, today's plan, variance, and task counts.
 
 ## 17. Conflict and offline merge flows
 
@@ -458,8 +459,9 @@ Don't:
 
 ## 20. Dashboard v2
 
-- Layout: KPI row (4: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), performance chart + agenda, active events + status donut + team activity, finance strip + deadline list, activity log.
-- Charts use Chart.js (lazy-loaded only on dashboard): vertical grouped bars for progress vs budget absorption with percentage labels above each bar (y-axis capped at 100%), doughnut for task status.
+- Layout: KPI row (4: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), then independent main/side columns so cards keep their natural height instead of stretching to the tallest card.
+- Main column: performance chart (with avg progress/absorption/event stats), progress per event + status donut, finance comparison chart, activity log. Side column: agenda, active events, deadlines, team activity.
+- Charts use Chart.js (lazy-loaded only on dashboard): vertical grouped bars for progress vs budget absorption with percentage labels above each bar (y-axis capped at 100%), doughnut for task status, and a finance comparison chart (bars for Pendapatan/Expenses, lines for PnL/Piutang) with toggle chips per series; toggle state persists in `localStorage`.
 - Deadline card lists the four nearest open tasks with countdown badges (`Terlambat X hari` danger, `Hari ini` / `Besok` / `≤3 hari` warning, `>3 hari` muted). No time tracker.
 - Realtime via Laravel Reverb + Echo: each user subscribes to `private-App.Models.User.{id}`; new notifications update sidebar/popover counts instantly and show a dismissible navy-accent toast bottom-right (8s, clickable to the notification list). Broadcasts are queued after commit and sent to the local Reverb API (`127.0.0.1`), while the browser uses the public WSS endpoint; without a Reverb connection the UI behaves as before.
 - All figures are scoped to events the user can see; dealer users are redirected to the portal.

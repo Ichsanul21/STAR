@@ -128,7 +128,7 @@
 
                             <div class="mt-3 space-y-2">
                                 @foreach ($group->tasks as $task)
-                                    <div class="rounded-xl border p-3" style="border-color: var(--border)">
+                                    <div class="rounded-xl border p-3 scroll-mt-24" id="task-{{ $task->id }}" style="border-color: var(--border)">
                                         <div class="flex flex-wrap items-start justify-between gap-3">
                                             <div class="min-w-0">
                                                 <div class="flex flex-wrap items-center gap-2">

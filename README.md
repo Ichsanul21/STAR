@@ -51,7 +51,7 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Global create modals for expenses (choose event, dependent budget item) and payments (create invoice, record payment), scoped to the user's event access.
 - Three-way per-field conflict merge (base/submitted/server) with automatic non-conflicting resolution and manual choice for disputed fields.
 - Compact one-line filter toolbars (search + selects + dates + Filter/Reset) across global pages, wrapping cleanly on smaller screens.
-- Dashboard KPIs: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client; performance card uses a Chart.js vertical grouped bar chart with percentage labels for progress vs budget absorption; deadline card lists the nearest deadlines with countdown badges. The dashboard notification card was removed (notifications live in the sidebar inbox/popover).
+- Dashboard KPIs: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client; performance card uses a Chart.js vertical grouped bar chart with percentage labels for progress vs budget absorption; a finance comparison chart shows Pendapatan, Expenses, PnL, and Piutang per event with on/off series toggles; progress card includes per-event progress; deadline card lists the nearest deadlines with countdown badges. The dashboard notification card was removed (notifications live in the sidebar inbox/popover).
 - Sidebar notification card with aligned category counts (Tugas, Keuangan, Laporan), hover/active states; the collapsed bell opens a compact 216px vertical popover (“Notifikasi {total}” + category counts + “Lihat semua”, no subtitle/latest list). Counts combine unread notifications with an action inbox (pending expense approvals, due tasks, draft reports).
 - Collapsible desktop sidebar (42px icon rail, shared icon column, hover tooltips), edge-centered toggle handle, 280ms collapse/expand animation, auto-scroll to the active menu item, and a custom overlay scrollbar shown only on module hover (2px expanded, 1px collapsed).
 - Preview modal with a metadata side panel (file info, uploader, event/phase/task, GPS + OpenStreetMap embed).
@@ -60,7 +60,7 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Client/dealer module: profile, event history, contract/invoiced/received/outstanding/P&L, create-event shortcut.
 - Per-event P&L (contract value or final RAB as fallback) shown on event cards/list, workspace header, budget overview, and client detail.
 - Route-based event workspace tabs: Overview, Plan, Tasks, Finance, Documentation, Reports, Team. Only the active tab renders.
-- Task hierarchy: task group → task → checklist, weighted progress rollup, dependencies, deadline countdown badges, interactive Gantt (zoom + drag-to-reschedule), persisted draggable SVG dependency graph with drag-from-handle/connect mode (FS/SS/FF/SF + lag) + critical path.
+- Task hierarchy: task group → task → checklist, weighted progress rollup, dependencies, deadline countdown badges, Jira-like Gantt (zoom, sticky columns, weekend/today markers, click-to-edit modal), S-curve planned vs actual progress, persisted draggable SVG dependency graph with drag-from-handle/connect mode (FS/SS/FF/SF + lag) + critical path.
 - Forward-only task updates with mandatory note + optional photo, immutable history, and reviewer/PM revision tasks.
 - Detailed activity audit log; EO Admin sees activity, Super Admin additionally sees IP/device/browser/platform.
 - RAB planning/final/realization, expenses + approval, client invoices/payments.

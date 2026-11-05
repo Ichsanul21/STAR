@@ -83,6 +83,7 @@ class TaskController extends Controller
             'description' => ['nullable', 'string'],
             'priority' => ['required', 'in:low,medium,high,urgent'],
             'assigned_to' => ['nullable', 'exists:users,id'],
+            'start_at' => ['nullable', 'date'],
             'due_at' => ['nullable', 'date'],
             'expected_updated_at' => ['nullable', 'date'],
             'lock_version' => ['nullable', 'integer'],
@@ -90,6 +91,10 @@ class TaskController extends Controller
 
         if ($this->hasConflict($task, $data['expected_updated_at'] ?? null) || $this->hasVersionConflict($task, $data['lock_version'] ?? null)) {
             return $this->conflictResponse($request, 'Task sudah diubah orang lain. Muat ulang halaman sebelum menyimpan.');
+        }
+
+        if (! empty($data['start_at']) && ! empty($data['due_at']) && strtotime($data['due_at']) < strtotime($data['start_at'])) {
+            return back()->withErrors(['due_at' => 'Due date harus setelah start date.'])->withInput();
         }
 
         unset($data['expected_updated_at'], $data['lock_version']);

@@ -22,6 +22,7 @@ if (root) {
 
     const performance = read('performance');
     const taskStats = read('taskStats');
+    const financial = read('financial');
 
     Chart.defaults.font.family = "'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif";
     Chart.defaults.color = muted;
@@ -107,6 +108,168 @@ if (root) {
             },
             plugins: [barLabels],
         });
+    }
+
+    const financeCanvas = document.getElementById('financeChart');
+
+    if (financeCanvas && financial.length) {
+        const compactMoney = (value) => {
+            const number = Number(value) || 0;
+            const abs = Math.abs(number);
+
+            if (abs >= 1_000_000_000) return `Rp ${(number / 1_000_000_000).toFixed(1).replace('.', ',')} M`;
+            if (abs >= 1_000_000) return `Rp ${Math.round(number / 1_000_000)} jt`;
+            if (abs >= 1_000) return `Rp ${Math.round(number / 1_000)} rb`;
+
+            return `Rp ${number}`;
+        };
+
+        const money = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0,
+        });
+
+        const datasets = [
+            {
+                key: 'revenue',
+                label: 'Pendapatan',
+                type: 'bar',
+                data: financial.map((row) => row.revenue),
+                backgroundColor: brand,
+                borderRadius: 5,
+                maxBarThickness: 26,
+                order: 2,
+            },
+            {
+                key: 'expenses',
+                label: 'Expenses',
+                type: 'bar',
+                data: financial.map((row) => row.expenses),
+                backgroundColor: danger,
+                borderRadius: 5,
+                maxBarThickness: 26,
+                order: 2,
+            },
+            {
+                key: 'pnl',
+                label: 'PnL',
+                type: 'line',
+                data: financial.map((row) => row.pnl),
+                borderColor: success,
+                backgroundColor: success,
+                borderWidth: 2,
+                tension: 0.35,
+                pointRadius: 3,
+                pointHoverRadius: 4,
+                order: 1,
+            },
+            {
+                key: 'receivable',
+                label: 'Piutang',
+                type: 'line',
+                data: financial.map((row) => row.receivable),
+                borderColor: warning,
+                backgroundColor: warning,
+                borderWidth: 2,
+                borderDash: [5, 4],
+                tension: 0.35,
+                pointRadius: 3,
+                pointHoverRadius: 4,
+                order: 1,
+            },
+        ];
+
+        const financeChart = new Chart(financeCanvas, {
+            type: 'bar',
+            data: {
+                labels: financial.map((row) => row.name),
+                datasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => `${context.dataset.label}: ${money.format(Number(context.parsed.y) || 0)}`,
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            callback: function (value) {
+                                const label = this.getLabelForValue(value);
+
+                                return label.length > 16 ? `${label.slice(0, 15)}…` : label;
+                            },
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(100,116,139,0.12)' },
+                        ticks: { callback: (value) => compactMoney(value) },
+                    },
+                },
+            },
+        });
+
+        const storageKey = 'star.finance.series';
+        let hiddenSeries = {};
+
+        try {
+            hiddenSeries = JSON.parse(localStorage.getItem(storageKey) || '{}') || {};
+        } catch (error) {
+            hiddenSeries = {};
+        }
+
+        const chips = [...document.querySelectorAll('[data-finance-toggle]')];
+
+        const syncChips = () => {
+            chips.forEach((chip) => {
+                const index = datasets.findIndex((dataset) => dataset.key === chip.dataset.financeToggle);
+                const visible = index >= 0 && financeChart.isDatasetVisible(index);
+
+                chip.classList.toggle('is-active', visible);
+                chip.setAttribute('aria-pressed', visible ? 'true' : 'false');
+            });
+        };
+
+        chips.forEach((chip) => {
+            const index = datasets.findIndex((dataset) => dataset.key === chip.dataset.financeToggle);
+
+            if (index < 0) return;
+
+            if (hiddenSeries[chip.dataset.financeToggle]) {
+                financeChart.setDatasetVisibility(index, false);
+            }
+
+            chip.addEventListener('click', () => {
+                const next = !financeChart.isDatasetVisible(index);
+
+                financeChart.setDatasetVisibility(index, next);
+                financeChart.update();
+
+                hiddenSeries[chip.dataset.financeToggle] = !next;
+
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify(hiddenSeries));
+                } catch (error) {
+                    // Ignore storage failures.
+                }
+
+                syncChips();
+            });
+        });
+
+        financeChart.update();
+        syncChips();
     }
 
     const statusCanvas = document.getElementById('taskStatusChart');

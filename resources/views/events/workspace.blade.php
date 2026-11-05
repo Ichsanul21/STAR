@@ -93,12 +93,14 @@
         @include('events.partials.planning')
     @elseif ($tab === 'tasks')
         <div class="mb-4 flex gap-1 overflow-x-auto">
-            @foreach (['board' => 'Board', 'timeline' => 'Timeline', 'graph' => 'Graph'] as $key => $label)
+            @foreach (['board' => 'Board', 'timeline' => 'Timeline', 'scurve' => 'S-Curve', 'graph' => 'Graph'] as $key => $label)
                 <a href="{{ route('events.tab', [$event, 'tasks']) }}?view={{ $key }}" class="tab {{ $view === $key ? 'tab-active' : '' }}">{{ $label }}</a>
             @endforeach
         </div>
         @if ($view === 'timeline')
             @include('events.partials.timeline')
+        @elseif ($view === 'scurve')
+            @include('events.partials.scurve')
         @elseif ($view === 'graph')
             @include('events.partials.graph')
         @else

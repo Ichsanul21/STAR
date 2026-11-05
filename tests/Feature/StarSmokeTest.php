@@ -507,6 +507,64 @@ class StarSmokeTest extends TestCase
         $this->actingAs($admin)->get('/events/'.$event->id.'/tasks?zoom=day')->assertOk();
     }
 
+    public function test_dashboard_renders_financial_chart_with_toggles(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+
+        $this->actingAs($admin)->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Perbandingan keuangan')
+            ->assertSee('data-finance-toggle="revenue"', false)
+            ->assertSee('id="financeChart"', false)
+            ->assertSee('data-financial', false)
+            ->assertSee('Piutang');
+    }
+
+    public function test_timeline_uses_click_modal_and_has_scurve_view(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $event = Event::firstOrFail();
+
+        $this->actingAs($admin)->get('/events/'.$event->id.'/tasks?view=timeline')
+            ->assertOk()
+            ->assertSee('ganttTaskModal', false)
+            ->assertSee('data-gantt-task', false)
+            ->assertDontSee('data-draggable', false);
+
+        $this->actingAs($admin)->get('/events/'.$event->id.'/tasks?view=scurve')
+            ->assertOk()
+            ->assertSee('S-Curve Progress')
+            ->assertSee('data-scurve', false)
+            ->assertSee('Rencana hari ini');
+    }
+
+    public function test_task_edit_updates_schedule_and_rejects_inverted_dates(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $task = Task::whereNotNull('due_at')->firstOrFail();
+
+        $this->actingAs($admin)->patch('/tasks/'.$task->id, [
+            'name' => 'Agenda diperbarui',
+            'description' => 'Catatan agenda',
+            'priority' => 'high',
+            'assigned_to' => null,
+            'start_at' => '2026-06-01T08:00',
+            'due_at' => '2026-06-03T17:00',
+        ])->assertRedirect();
+
+        $task->refresh();
+        $this->assertSame('Agenda diperbarui', $task->name);
+        $this->assertSame('2026-06-01 08:00', $task->start_at->format('Y-m-d H:i'));
+        $this->assertSame('2026-06-03 17:00', $task->due_at->format('Y-m-d H:i'));
+
+        $this->actingAs($admin)->patch('/tasks/'.$task->id, [
+            'name' => $task->name,
+            'priority' => $task->priority,
+            'start_at' => '2026-06-05T08:00',
+            'due_at' => '2026-06-01T17:00',
+        ])->assertSessionHasErrors('due_at');
+    }
+
     public function test_super_admin_can_create_dealer_and_user(): void
     {
         $admin = User::where('email', 'admin@star.test')->firstOrFail();

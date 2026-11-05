@@ -16,6 +16,10 @@ if (document.querySelector('[data-dashboard-chart]')) {
     import('./charts');
 }
 
+if (document.querySelector('[data-scurve]')) {
+    import('./scurve');
+}
+
 if (document.querySelector('select')) {
     import('./selects');
 }
@@ -128,100 +132,64 @@ if (bulkForm) {
     });
 }
 
-const ganttBars = document.querySelectorAll('[data-gantt-bar][data-draggable="1"]');
+const ganttModal = document.getElementById('ganttTaskModal');
+const ganttForm = document.getElementById('ganttTaskForm');
 
-ganttBars.forEach((bar) => {
-    let startX = 0;
-    let moved = false;
-    let dragging = false;
-
-    const formatDate = (date) => {
-        const pad = (value) => String(value).padStart(2, '0');
-
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+if (ganttModal && ganttForm) {
+    const fields = {
+        name: document.getElementById('ganttTaskName'),
+        description: document.getElementById('ganttTaskDescription'),
+        start: document.getElementById('ganttTaskStart'),
+        due: document.getElementById('ganttTaskDue'),
+        priority: document.getElementById('ganttTaskPriority'),
+        assignee: document.getElementById('ganttTaskAssignee'),
+        lock: document.getElementById('ganttTaskLock'),
+        updated: document.getElementById('ganttTaskUpdated'),
+        status: document.getElementById('ganttTaskStatus'),
+        open: document.getElementById('ganttTaskOpen'),
     };
 
-    const shift = (iso, days) => {
-        const date = new Date(`${iso}T00:00:00`);
-        date.setDate(date.getDate() + days);
-
-        return formatDate(date);
+    const statusLabels = {
+        todo: 'Todo',
+        in_progress: 'In Progress',
+        blocked: 'Blocked',
+        review: 'Review',
+        done: 'Done',
+        cancelled: 'Cancelled',
     };
 
-    bar.addEventListener('pointerdown', (event) => {
-        startX = event.clientX;
-        moved = false;
-        dragging = true;
-        try {
-            bar.setPointerCapture(event.pointerId);
-        } catch (error) {
-            // Synthetic pointers cannot be captured; dragging still works.
-        }
-    });
+    const setSelectValue = (element, value) => {
+        if (!element) return;
 
-    bar.addEventListener('pointermove', (event) => {
-        if (!dragging) return;
-        const deltaX = event.clientX - startX;
-        if (Math.abs(deltaX) > 3) moved = true;
-        bar.style.transform = `translateX(${deltaX}px)`;
-    });
-
-    bar.addEventListener('pointerup', async (event) => {
-        if (!dragging) return;
-        dragging = false;
-
-        const deltaX = event.clientX - startX;
-        const pixelsPerDay = parseFloat(bar.dataset.ppd) || 26;
-        try {
-            bar.releasePointerCapture(event.pointerId);
-        } catch (error) {
-            // Ignore capture release errors.
-        }
-
-        const deltaDays = Math.round(deltaX / pixelsPerDay);
-
-        if (!moved || deltaDays === 0) {
-            bar.style.transform = '';
+        if (element.tomselect) {
+            element.tomselect.setValue(value || '', true);
 
             return;
         }
 
-        const payload = {
-            start_at: shift(bar.dataset.start, deltaDays),
-            due_at: shift(bar.dataset.due, deltaDays),
-        };
+        element.value = value || '';
+    };
 
-        try {
-            const response = await fetch(`/tasks/${bar.dataset.taskId}/schedule`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                },
-                body: JSON.stringify(payload),
-            });
+    document.querySelectorAll('[data-gantt-task]').forEach((row) => {
+        row.addEventListener('click', () => {
+            const data = row.dataset;
 
-            if (response.ok) {
-                window.location.reload();
+            fields.name.value = data.taskName || '';
+            fields.description.value = data.taskDescription || '';
+            fields.start.value = data.taskStart || '';
+            fields.due.value = data.taskDue || '';
+            setSelectValue(fields.priority, data.taskPriority || 'medium');
+            setSelectValue(fields.assignee, data.taskAssignee || '');
+            fields.lock.value = data.taskLock || '';
+            fields.updated.value = data.taskUpdated || '';
+            fields.status.textContent = statusLabels[data.taskStatus] || data.taskStatus || 'Task';
+            fields.open.href = data.taskOpen || '#';
 
-                return;
-            }
-
-            const json = await response.json().catch(() => null);
-            alert(json?.message ?? 'Jadwal gagal diperbarui.');
-        } catch (error) {
-            alert('Jadwal gagal diperbarui. Periksa koneksi.');
-        }
-
-        bar.style.transform = '';
+            ganttForm.action = data.taskUrl || '';
+            ganttModal.showModal();
+        });
     });
-
-    bar.addEventListener('pointercancel', () => {
-        dragging = false;
-        bar.style.transform = '';
-    });
-});
+}
 
 const filterTable = (tableId) => {
     const table = document.getElementById(tableId);

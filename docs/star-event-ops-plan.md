@@ -22,7 +22,7 @@ Finance flow:
 ### In scope
 
 - Event core: events, configurable phases, divisions, members, roles.
-- Task management: task groups, tasks, checklists, dependencies, time tracking, Gantt, dependency graph.
+- Task management: task groups, tasks, checklists, dependencies, Gantt, S-Curve, dependency graph.
 - Progress rollup: checklist -> task -> task group -> phase -> event.
 - RAB: planning, final, realization, versioning, XLSX import.
 - Expense: recording, receipt attachments, approval, offline entry.
@@ -389,7 +389,7 @@ SQLite -> MySQL:
 ## 13. Build order
 
 1. Foundation: Laravel, auth/roles, organizations, dealers, event, phases, divisions, members.
-2. Task hierarchy: task groups, tasks, checklists, progress rollup, dependencies, time tracking.
+2. Task hierarchy: task groups, tasks, checklists, progress rollup, dependencies, Gantt, S-Curve.
 3. Budget: versions, items, XLSX import, final lock.
 4. Expense: recording, receipts, approval, offline.
 5. Client payment: invoices, payments, outstanding.
@@ -429,7 +429,7 @@ SQLite -> MySQL:
 STAR is an event operations + finance-lite system, not a full ERP. Build only:
 
 - Events, configurable phases, divisions, event members.
-- Task hierarchy: task group -> task -> checklist, with dependencies, time tracking, Gantt, graph.
+- Task hierarchy: task group -> task -> checklist, with dependencies, Gantt, S-Curve, graph.
 - RAB planning/final/realization, expenses, client invoices/payments.
 - Image documentation with GPS/timestamp/watermark + OSM map.
 - Visitor/result data.
@@ -542,7 +542,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Client/dealer module with profile, event history, financial summary, and create-event shortcut.
 - Global search across modules; CSV exports that follow filters; bulk expense approval.
 - Toast feedback, conflict reload banner, route progress bar, mobile bottom nav, empty states.
-- Interactive Gantt: zoom levels, today marker, drag-to-reschedule.
+- Jira-like Gantt: zoom levels, today marker, weekend shading, sticky task column, click-to-edit modal, and S-Curve (planned vs actual).
 - Master Data can create dealers/users (Super Admin); Settings covers profile, password, and app info.
 
 ## 18. Remaining backlog
@@ -570,7 +570,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Preview modal with metadata panel (file info, uploader/role, event/phase/task, GPS + OpenStreetMap embed).
 - Event list default view is stored from the Events page, not Settings.
 - New app shell: light navy-tinted sidebar (gradient, SVG icons, section labels, active pill/bar, promo card, user block), topbar search with Ctrl K, white rounded content surface.
-- Dashboard: 4 KPI cards (Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), Chart.js vertical grouped bars for progress vs budget absorption with percentage labels, task doughnut, agenda/reminders, active events, team activity, finance strip, and a nearest-deadline list with countdown badges; metrics scoped to the user's visible events. No notification card and no time tracker.
+- Dashboard: independent main/side columns, 4 KPI cards (Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), Chart.js vertical grouped bars for progress vs budget absorption with percentage labels, finance comparison chart (Pendapatan/Expenses bars, PnL/Piutang lines) with series toggles, task doughnut, per-event progress, agenda/reminders, active events, team activity, and a nearest-deadline list with countdown badges; metrics scoped to the user's visible events. No notification card and no time tracker.
 - Realtime: Laravel Reverb broadcasts `UserNotificationCreated` on the user's private channel after commit (queued); Echo updates badge counts and shows a toast. Server-side broadcasts go to `REVERB_API_HOST` (local Reverb), while the browser connects through the public `REVERB_HOST`. `BROADCAST_CONNECTION=reverb` requires the Reverb service and nginx WebSocket proxy.
 
 ## 21. Remaining backlog

@@ -11,6 +11,7 @@ use App\Models\EventDivision;
 use App\Models\EventMember;
 use App\Models\EventPhase;
 use App\Models\User;
+use App\Services\EventCurveService;
 use App\Services\EventSetupService;
 use App\Services\FinanceService;
 use Illuminate\Http\Request;
@@ -118,8 +119,11 @@ class EventController extends Controller
             ->take(20)
             ->get();
         $view = request('view', $tab === 'tasks' ? 'board' : ($tab === 'finance' ? 'budget' : null));
+        $curve = $view === 'scurve'
+            ? app(EventCurveService::class)->build($event)
+            : null;
 
-        return view('events.workspace', compact('event', 'tab', 'view', 'financials', 'budget', 'users', 'dealers', 'activities'));
+        return view('events.workspace', compact('event', 'tab', 'view', 'financials', 'budget', 'users', 'dealers', 'activities', 'curve'));
     }
 
     public function update(Request $request, Event $event)

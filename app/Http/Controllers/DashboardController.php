@@ -93,6 +93,28 @@ class DashboardController extends Controller
             })
             ->values();
 
+        $financialEvents = Event::with(['dealer', 'finalBudget', 'planningBudget', 'invoices.payments'])
+            ->whereIn('id', $eventIds)
+            ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'draft' THEN 1 ELSE 2 END")
+            ->orderByDesc('start_date')
+            ->limit(6)
+            ->get()
+            ->map(function (Event $event) use ($finance) {
+                $pnl = $finance->eventPnl($event);
+
+                return [
+                    'name' => $event->name,
+                    'revenue' => $pnl['contract'],
+                    'expenses' => $pnl['cost'],
+                    'pnl' => $pnl['gross_profit'],
+                    'receivable' => $pnl['outstanding'],
+                ];
+            })
+            ->values();
+
+        $avgProgress = round((float) $performanceEvents->avg('progress'), 1);
+        $avgAbsorption = round((float) $performanceEvents->avg('absorption'), 1);
+
         $activeEventList = Event::with(['dealer', 'phases', 'finalBudget', 'planningBudget'])
             ->whereIn('id', $eventIds)
             ->where('status', 'active')
@@ -139,7 +161,8 @@ class DashboardController extends Controller
             'deadlineTasks', 'deadlineToday', 'deadlineSoon',
             'planned', 'actual', 'absorption',
             'invoiced', 'received', 'outstanding', 'contract', 'grossProfit', 'margin',
-            'performanceEvents', 'activeEventList', 'agendaTasks', 'dueInvoices', 'eventsWithoutReport',
+            'performanceEvents', 'financialEvents', 'avgProgress', 'avgAbsorption',
+            'activeEventList', 'agendaTasks', 'dueInvoices', 'eventsWithoutReport',
             'teamUpdates', 'taskStats', 'activities'
         ));
     }
