@@ -2802,3 +2802,33 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
         display: none;
     }
 }
+
+/* Sidebar notification card: header and rows share the same text grid */
+.sidebar-notif-head,
+.sidebar-notif-row {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+.sidebar-notif-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    width: 100%;
+    gap: 8px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+.sidebar-notif-row {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+}
+.sidebar-notif-total,
+.sidebar-notif-count {
+    min-width: 2ch;
+    color: var(--brand);
+    font-size: 10px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
