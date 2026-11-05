@@ -998,17 +998,6 @@ select.tomselected {
     background: #fff;
     color: var(--ink);
 }
-.topbar-dot {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    padding: 1px 5px;
-    border-radius: 999px;
-    background: var(--danger);
-    color: #fff;
-    font-size: 9px;
-    font-weight: 800;
-}
 .topbar-user {
     display: flex;
     align-items: center;

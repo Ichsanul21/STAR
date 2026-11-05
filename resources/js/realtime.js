@@ -54,7 +54,6 @@ if (userId && key && host) {
         setValue('[data-notif-count="report"]', counts.report);
         setBadge('[data-notif-nav-badge]', counts.unread);
         setBadge('[data-notif-mini]', counts.total);
-        setBadge('[data-notif-topbar]', counts.total);
     };
 
     const stack = () => {

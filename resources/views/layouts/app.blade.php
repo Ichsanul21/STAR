@@ -265,10 +265,6 @@
                 @if ($user?->isDev() && $devToolsEnabled)
                     <a href="{{ route('dev.index') }}" class="topbar-dev" title="Dev Tools">DEV</a>
                 @endif
-                <a href="{{ route('notifications.index') }}" class="topbar-icon" aria-label="Notifikasi">
-                    <x-icon name="bell" class="w-5 h-5" />
-                    <span class="topbar-dot {{ $notifTotal > 0 ? '' : 'hidden' }}" data-notif-topbar>{{ $notifTotal }}</span>
-                </a>
                 <div class="topbar-user">
                     <div class="topbar-avatar">{{ strtoupper(substr($user?->name ?? 'S', 0, 1)) }}</div>
                     <div class="hidden min-w-0 sm:block">

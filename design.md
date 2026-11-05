@@ -446,7 +446,7 @@ Don't:
 - Sidebar scrollbar is a custom overlay (native scrollbar hidden), appearing only while hovering module items, navy thumb, no arrow buttons: 2px when expanded, 1px when collapsed.
 - Collapse/expand uses a 280ms width animation (Web Animations API with a 340ms final-state fallback), plus brand/nav/toggle/chevron transitions.
 - Bottom: notification card (total unread + Tugas/Keuangan/Laporan counts + “Lihat semua”) and user block with role + logout.
-- Topbar: search pill centered on desktop (3-column grid, max 520px) with Ctrl/Cmd+K hint, notification icon + badge, avatar with name/email; the burger button only appears below 1024px.
+- Topbar: search pill centered on desktop (3-column grid, max 520px) with Ctrl/Cmd+K hint, avatar with name/email; no notification icon (notifications live in the sidebar card/mini bell); the burger button only appears below 1024px.
 - Dealer portal uses red-tinted surface/sidebar tokens; semantic success/warning/danger colors stay consistent.
 
 ## 19. Searchable inputs
@@ -461,7 +461,7 @@ Don't:
 - Layout: KPI row (4: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), performance chart + agenda, active events + status donut + team activity, finance strip + deadline list, activity log.
 - Charts use Chart.js (lazy-loaded only on dashboard): vertical grouped bars for progress vs budget absorption with percentage labels above each bar (y-axis capped at 100%), doughnut for task status.
 - Deadline card lists the four nearest open tasks with countdown badges (`Terlambat X hari` danger, `Hari ini` / `Besok` / `≤3 hari` warning, `>3 hari` muted). No time tracker.
-- Realtime via Laravel Reverb + Echo: each user subscribes to `private-App.Models.User.{id}`; new notifications update sidebar/topbar/popover counts instantly and show a dismissible navy-accent toast bottom-right (8s, clickable to the notification list). Broadcasts are queued after commit and sent to the local Reverb API (`127.0.0.1`), while the browser uses the public WSS endpoint; without a Reverb connection the UI behaves as before.
+- Realtime via Laravel Reverb + Echo: each user subscribes to `private-App.Models.User.{id}`; new notifications update sidebar/popover counts instantly and show a dismissible navy-accent toast bottom-right (8s, clickable to the notification list). Broadcasts are queued after commit and sent to the local Reverb API (`127.0.0.1`), while the browser uses the public WSS endpoint; without a Reverb connection the UI behaves as before.
 - All figures are scoped to events the user can see; dealer users are redirected to the portal.
 
 ## 21. Preview metadata panel
