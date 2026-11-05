@@ -571,7 +571,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Event list default view is stored from the Events page, not Settings.
 - New app shell: light navy-tinted sidebar (gradient, SVG icons, section labels, active pill/bar, promo card, user block), topbar search with Ctrl K, white rounded content surface.
 - Dashboard: 4 KPI cards (Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), Chart.js vertical grouped bars for progress vs budget absorption with percentage labels, task doughnut, agenda/reminders, active events, team activity, finance strip, and a nearest-deadline list with countdown badges; metrics scoped to the user's visible events. No notification card and no time tracker.
-- Realtime: Laravel Reverb broadcasts `UserNotificationCreated` on the user's private channel after commit; Echo updates badge counts and shows a toast. `BROADCAST_CONNECTION=reverb` requires the Reverb service and nginx WebSocket proxy.
+- Realtime: Laravel Reverb broadcasts `UserNotificationCreated` on the user's private channel after commit (queued); Echo updates badge counts and shows a toast. Server-side broadcasts go to `REVERB_API_HOST` (local Reverb), while the browser connects through the public `REVERB_HOST`. `BROADCAST_CONNECTION=reverb` requires the Reverb service and nginx WebSocket proxy.
 
 ## 21. Remaining backlog
 

@@ -27,7 +27,11 @@ class NotificationService
                 'type' => $type,
             ]);
 
-            UserNotificationCreated::dispatch($notification);
+            try {
+                UserNotificationCreated::dispatch($notification);
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
     }
 

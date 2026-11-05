@@ -9,7 +9,7 @@ Group=www-data
 Restart=always
 RestartSec=5
 WorkingDirectory=/var/www/star/current
-ExecStart=/usr/bin/php8.4 artisan reverb:start --host=127.0.0.1 --port=8080
+ExecStart=/usr/bin/php8.4 artisan reverb:start --host=127.0.0.1 --port=8090
 StandardOutput=journal
 StandardError=journal
 

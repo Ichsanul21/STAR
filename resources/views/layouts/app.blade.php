@@ -9,9 +9,9 @@
         @if (config('broadcasting.default') === 'reverb')
             <meta name="user-id" content="{{ auth()->id() }}">
             <meta name="reverb-key" content="{{ config('broadcasting.connections.reverb.key') }}">
-            <meta name="reverb-host" content="{{ config('broadcasting.connections.reverb.options.host') }}">
-            <meta name="reverb-port" content="{{ config('broadcasting.connections.reverb.options.port') }}">
-            <meta name="reverb-scheme" content="{{ config('broadcasting.connections.reverb.options.scheme') }}">
+            <meta name="reverb-host" content="{{ config('broadcasting.connections.reverb.client.host') }}">
+            <meta name="reverb-port" content="{{ config('broadcasting.connections.reverb.client.port') }}">
+            <meta name="reverb-scheme" content="{{ config('broadcasting.connections.reverb.client.scheme') }}">
         @endif
     @endauth
     <link rel="manifest" href="/manifest.webmanifest">
