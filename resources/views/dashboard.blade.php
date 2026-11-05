@@ -183,10 +183,10 @@
             </div>
 
             <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <div class="mini-stat"><div class="mini-label">Pendapatan</div><div class="mini-value"><x-money :value="$contract" /></div></div>
-                <div class="mini-stat"><div class="mini-label">Expenses</div><div class="mini-value"><x-money :value="$actual" /></div></div>
-                <div class="mini-stat"><div class="mini-label">PnL</div><div class="mini-value" style="color: {{ $grossProfit >= 0 ? 'var(--success)' : 'var(--danger)' }}"><x-money :value="$grossProfit" /></div></div>
-                <div class="mini-stat"><div class="mini-label">Piutang</div><div class="mini-value" style="color: {{ $outstanding > 0 ? 'var(--warning)' : 'var(--success)' }}"><x-money :value="$outstanding" /></div></div>
+                <div class="mini-stat"><div class="mini-label">Nilai Project</div><div class="mini-value"><x-money :value="$contract" /></div></div>
+                <div class="mini-stat"><div class="mini-label">Sudah Dibayar</div><div class="mini-value" style="color: var(--success)"><x-money :value="$received" /></div></div>
+                <div class="mini-stat"><div class="mini-label">Total Expense</div><div class="mini-value"><x-money :value="$actual" /></div></div>
+                <div class="mini-stat"><div class="mini-label">Total PnL</div><div class="mini-value" style="color: {{ $grossProfit >= 0 ? 'var(--success)' : 'var(--danger)' }}"><x-money :value="$grossProfit" /></div></div>
             </div>
 
             <div class="mt-4">

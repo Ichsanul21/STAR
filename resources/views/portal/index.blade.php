@@ -37,7 +37,7 @@
             <div class="card card-pad">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <div class="text-xs font-semibold text-slate-500">{{ $report->event->code }} · v{{ $report->version }}</div>
+                        <div class="text-xs font-semibold text-slate-500">{{ $report->report_number ?: $report->event->code.' · v'.$report->version }}</div>
                         <div class="mt-1 text-lg font-bold text-slate-900">{{ $report->event->name }}</div>
                         <div class="text-sm text-slate-500">{{ $report->event->location ?: '—' }} · {{ $report->event->start_date?->format('d/m/Y') }}</div>
                         <div class="mt-2 flex items-center gap-2">
@@ -49,7 +49,7 @@
                     </div>
                     <div class="flex flex-wrap gap-2">
                         @if ($report->pdf_path)
-                            <a href="{{ route('reports.pdf', $report) }}" class="btn btn-primary btn-sm" data-preview="pdf" data-preview-title="{{ $report->event->name }} v{{ $report->version }}" data-download-url="{{ route('reports.pdf', $report) }}">Lihat PDF</a>
+                            <a href="{{ route('reports.pdf', $report) }}" class="btn btn-primary btn-sm" data-preview="pdf" data-preview-title="{{ $report->report_number ?: $report->event->name.' v'.$report->version }}" data-download-url="{{ route('reports.pdf', $report) }}">Lihat PDF</a>
                         @endif
                         @if ($report->xlsx_path)
                             <a href="{{ route('reports.xlsx', $report) }}" class="btn btn-secondary btn-sm">Excel</a>

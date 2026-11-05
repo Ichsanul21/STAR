@@ -21,11 +21,12 @@ class ReportController extends Controller
         $this->authorizeManage($event);
 
         $report = $reportService->generate($event, auth()->user());
+        $label = $report->report_number ?: 'v'.$report->version;
 
-        $activity->log('report.generated', 'Generate laporan v'.$report->version, $event, $report);
-        $notifier->send($notifier->dealerUsers($event), 'Laporan baru tersedia', $event->name.' v'.$report->version, $event, 'report');
+        $activity->log('report.generated', 'Generate laporan '.$label, $event, $report);
+        $notifier->send($notifier->dealerUsers($event), 'Laporan baru tersedia', $event->name.' '.$label, $event, 'report');
 
-        return back()->with('success', 'Laporan v'.$report->version.' berhasil dibuat.');
+        return back()->with('success', 'Laporan '.$label.' berhasil dibuat.');
     }
 
     public function preview(ReportVersion $report, ReportService $reportService, \App\Services\FinanceService $financeService)
@@ -51,7 +52,9 @@ class ReportController extends Controller
             abort(404);
         }
 
-        return Storage::disk('local')->response($report->pdf_path, 'laporan-'.$report->event->code.'-v'.$report->version.'.pdf');
+        $number = str_replace(['/', '\\'], '-', $report->report_number ?: 'laporan-'.$report->event->code.'-v'.$report->version);
+
+        return Storage::disk('local')->response($report->pdf_path, $number.'.pdf');
     }
 
     public function xlsx(ReportVersion $report)
@@ -62,7 +65,9 @@ class ReportController extends Controller
             abort(404);
         }
 
-        return Storage::disk('local')->download($report->xlsx_path, 'laporan-'.$report->event->code.'-v'.$report->version.'.xlsx');
+        $number = str_replace(['/', '\\'], '-', $report->report_number ?: 'laporan-'.$report->event->code.'-v'.$report->version);
+
+        return Storage::disk('local')->download($report->xlsx_path, $number.'.xlsx');
     }
 
     public function publish(ReportVersion $report, ActivityService $activity, NotificationService $notifier)

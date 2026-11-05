@@ -11,6 +11,7 @@ use App\Models\Lookup;
 use App\Models\User;
 use App\Models\VisitorEntry;
 use App\Services\FinanceService;
+use App\Services\NumberingService;
 use Illuminate\Http\Request;
 
 class LookupController extends Controller
@@ -177,19 +178,25 @@ class LookupController extends Controller
         return response()->json(['items' => $items]);
     }
 
-    public function financeContext(Event $event, FinanceService $finance)
+    public function financeContext(Event $event, FinanceService $finance, NumberingService $numbering)
     {
         $this->authorizeFinance($event);
 
         $pnl = $finance->eventPnl($event);
-        $sequence = $event->invoices()->count() + 1;
 
         return response()->json([
             'contract' => $pnl['contract'],
             'invoiced' => $pnl['invoiced'],
             'remaining' => max(0, $pnl['contract'] - $pnl['invoiced']),
             'outstanding' => $pnl['outstanding'],
-            'suggested_number' => 'INV-'.$event->code.'-'.str_pad((string) $sequence, 2, '0', STR_PAD_LEFT),
+            'suggested_number' => $numbering->peek(
+                'invoice',
+                [
+                    'event' => $event,
+                    'event_code' => $event->code,
+                ],
+                fn (string $number) => ClientInvoice::query()->where('invoice_number', $number)->exists(),
+            ),
         ]);
     }
 }

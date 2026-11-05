@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ReportVersion extends Model
 {
     protected $fillable = [
-        'event_id', 'version', 'status', 'pdf_path', 'xlsx_path', 'snapshot', 'narrative', 'section_order',
+        'event_id', 'version', 'report_number', 'status', 'pdf_path', 'xlsx_path', 'snapshot', 'narrative', 'section_order',
         'generated_by', 'approved_by', 'published_at', 'acknowledged_by', 'acknowledged_at', 'checksum',
     ];
 

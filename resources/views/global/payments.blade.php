@@ -77,7 +77,7 @@
             <div class="md:col-span-3 rounded-xl bg-slate-50 px-3 py-2 text-xs" style="color: var(--muted)" data-invoice-info>
                 Pilih event untuk melihat sisa contract.
             </div>
-            <div><label class="label">No. Invoice</label><input name="invoice_number" class="input" required placeholder="INV-KODE-01" data-invoice-number value="{{ old('invoice_number') }}"></div>
+            <div><label class="label">No. Invoice</label><input name="invoice_number" class="input" placeholder="Otomatis" data-invoice-number value="{{ old('invoice_number') }}"></div>
             <div>
                 <label class="label">Termin</label>
                 <select name="term" class="input" required data-creatable>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClientInvoice;
+use App\Models\AppSetting;
 use App\Models\Dealer;
 use App\Models\Event;
 use App\Models\Expense;
@@ -11,6 +12,7 @@ use App\Models\ReportVersion;
 use App\Models\Task;
 use App\Models\User;
 use App\Services\FinanceService;
+use App\Services\NumberingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -356,9 +358,56 @@ class GlobalController extends Controller
             ->with('success', 'Tampilan default event disimpan.');
     }
 
-    public function settings()
+    public function settings(NumberingService $numbering)
     {
-        return view('global.settings', ['user' => auth()->user()]);
+        $user = auth()->user();
+
+        $numberingFormats = [];
+        $numberingPreviews = [];
+
+        foreach (array_keys(NumberingService::DEFAULTS) as $type) {
+            $numberingFormats[$type] = $numbering->format($type);
+            $numberingPreviews[$type] = $numbering->preview($type);
+        }
+
+        return view('global.settings', compact('user', 'numberingFormats', 'numberingPreviews'));
+    }
+
+    public function updateNumbering(Request $request, NumberingService $numbering)
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        if ($request->filled('reset')) {
+            $type = (string) $request->input('reset');
+            abort_unless(array_key_exists($type, NumberingService::DEFAULTS), 422);
+
+            $numbering->reset($type);
+
+            return back()->with('success', 'Format penomoran '.NumberingService::LABELS[$type].' dikembalikan ke default.');
+        }
+
+        $data = $request->validate([
+            'event_format' => ['required', 'string', 'max:80'],
+            'invoice_format' => ['required', 'string', 'max:80'],
+            'spk_format' => ['required', 'string', 'max:80'],
+            'report_format' => ['required', 'string', 'max:80'],
+        ]);
+
+        foreach (array_keys(NumberingService::DEFAULTS) as $type) {
+            $field = $type.'_format';
+
+            if (! $numbering->isValidFormat($data[$field])) {
+                return back()
+                    ->withErrors([$field => 'Format wajib memakai token yang valid dan mengandung {seq}.'])
+                    ->withInput();
+            }
+        }
+
+        foreach (array_keys(NumberingService::DEFAULTS) as $type) {
+            AppSetting::put('numbering.'.$type, $data[$type.'_format']);
+        }
+
+        return back()->with('success', 'Format penomoran otomatis disimpan.');
     }
 
     public function updateSettings(Request $request)

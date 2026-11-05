@@ -543,7 +543,8 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Global search across modules; CSV exports that follow filters; bulk expense approval.
 - Toast feedback, conflict reload banner, route progress bar, mobile bottom nav, empty states.
 - Jira-like Gantt: zoom levels, today marker, weekend shading, sticky task column, click-to-edit modal, and S-Curve (planned vs actual).
-- Master Data can create dealers/users (Super Admin); Settings covers profile, password, and app info.
+- Master Data can create dealers/users (Super Admin); Settings covers profile, password, app info, and EO Admin auto-numbering formats for event/invoice/SPK/report.
+- Auto-numbering uses locked `number_sequences`, configurable token formats, and collision skipping; report numbers appear on the report list, PDF cover, portal, and filenames.
 
 ## 18. Remaining backlog
 
@@ -570,7 +571,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Preview modal with metadata panel (file info, uploader/role, event/phase/task, GPS + OpenStreetMap embed).
 - Event list default view is stored from the Events page, not Settings.
 - New app shell: light navy-tinted sidebar (gradient, SVG icons, section labels, active pill/bar, promo card, user block), topbar search with Ctrl K, white rounded content surface.
-- Dashboard: independent main/side columns, 4 KPI cards (Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), Chart.js vertical grouped bars for progress vs budget absorption with percentage labels, finance comparison chart (Pendapatan/Expenses bars, PnL/Piutang lines) with series toggles, task doughnut, per-event progress, agenda/reminders, active events, team activity, and a nearest-deadline list with countdown badges; metrics scoped to the user's visible events. No notification card and no time tracker.
+- Dashboard: independent main/side columns, 4 KPI cards (Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), Chart.js vertical grouped bars for progress vs budget absorption with percentage labels, finance comparison chart (Pendapatan/Expenses bars, PnL/Piutang lines) with series toggles, finance summary (Nilai Project/omzet, Sudah Dibayar, Total Expense, Total PnL), task doughnut, per-event progress, agenda/reminders, active events, team activity, and a nearest-deadline list with countdown badges; metrics scoped to the user's visible events. No notification card and no time tracker.
 - Realtime: Laravel Reverb broadcasts `UserNotificationCreated` on the user's private channel after commit (queued); Echo updates badge counts and shows a toast. Server-side broadcasts go to `REVERB_API_HOST` (local Reverb), while the browser connects through the public `REVERB_HOST`. `BROADCAST_CONNECTION=reverb` requires the Reverb service and nginx WebSocket proxy.
 
 ## 21. Remaining backlog
@@ -585,7 +586,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Tom Select wrapper border duplication is removed so controls align with native inputs and buttons.
 - Sidebar: install-app promo removed; Notifications moved to the bottom card with category counts (Tugas, Keuangan, Laporan); scrollbar is hidden until hover, 4px, navy, without arrows.
 - Sidebar notification card uses aligned tabular counts and hover/active category states; collapsed bell opens a compact 216px vertical popover with inline total next to “Notifikasi” + Tugas/Keuangan/Laporan + “Lihat semua” (no subtitle/latest list, no close icon).
-- Desktop sidebar collapses to a 42px icon rail (persisted in localStorage) with centered icons and hover tooltips; the toggle is a circular handle centered on the right edge. Brand, nav, notification and profile icons share one column; the active item auto-scrolls into view. The custom overlay scrollbar appears only while hovering module items (2px expanded, 1px collapsed). Collapse/expand uses a 280ms width animation with a final-state fallback.
+- Desktop sidebar is 188px expanded and collapses to a 42px icon rail (persisted in localStorage) with centered icons and hover tooltips; the toggle is a circular handle centered on the right edge. Brand, nav, notification and profile icons share one column; the active item auto-scrolls into view. The custom overlay scrollbar appears only while hovering module items (2px expanded, 1px collapsed) and its thumb follows the nav scroll position. Collapse/expand uses a 280ms width animation with a final-state fallback.
 - Notifications page gains category tabs (Semua/Tugas/Keuangan/Laporan) and a “Perlu tindakan” action inbox derived from pending expense approvals, tasks due within 7 days, and draft reports ready to publish; stored unread notifications are combined into the counts.
 
 ## 23. Developer role and Dev Tools (implemented)

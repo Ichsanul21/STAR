@@ -7,6 +7,7 @@ use App\Models\ClientInvoice;
 use App\Models\ClientPayment;
 use App\Models\Event;
 use App\Services\FinanceService;
+use App\Services\NumberingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -14,7 +15,7 @@ class PaymentController extends Controller
 {
     use AuthorizesEvents;
 
-    public function storeInvoice(Request $request, Event $event)
+    public function storeInvoice(Request $request, Event $event, NumberingService $numbering)
     {
         $this->authorizeFinance($event);
 
@@ -24,12 +25,12 @@ class PaymentController extends Controller
             return back()->withErrors(['amount' => $error]);
         }
 
-        $this->createInvoice($event, $data);
+        $this->createInvoice($event, $data, $numbering);
 
         return back()->with('success', 'Invoice client dibuat.');
     }
 
-    public function storeInvoiceGlobal(Request $request)
+    public function storeInvoiceGlobal(Request $request, NumberingService $numbering)
     {
         $data = $request->validate([
             'event_id' => ['required', 'exists:events,id'],
@@ -44,7 +45,7 @@ class PaymentController extends Controller
             return back()->withErrors(['amount' => $error]);
         }
 
-        $this->createInvoice($event, $payload);
+        $this->createInvoice($event, $payload, $numbering);
 
         return back()->with('success', 'Invoice client dibuat untuk event '.$event->name.'.');
     }
@@ -87,7 +88,7 @@ class PaymentController extends Controller
     private function validateInvoice(Request $request): array
     {
         return $request->validate([
-            'invoice_number' => ['required', 'string', 'max:80', 'unique:client_invoices,invoice_number'],
+            'invoice_number' => ['nullable', 'string', 'max:80', 'unique:client_invoices,invoice_number'],
             'term' => ['required', 'string', 'max:80'],
             'description' => ['nullable', 'string', 'max:160'],
             'amount' => ['required', 'numeric', 'min:0'],
@@ -118,11 +119,24 @@ class PaymentController extends Controller
         return null;
     }
 
-    private function createInvoice(Event $event, array $data): ClientInvoice
+    private function createInvoice(Event $event, array $data, NumberingService $numbering): ClientInvoice
     {
+        $number = trim((string) ($data['invoice_number'] ?? ''));
+
+        if ($number === '') {
+            $number = $numbering->next(
+                'invoice',
+                [
+                    'event' => $event,
+                    'event_code' => $event->code,
+                ],
+                fn (string $number) => ClientInvoice::query()->where('invoice_number', $number)->exists(),
+            );
+        }
+
         return ClientInvoice::create([
             'event_id' => $event->id,
-            'invoice_number' => $data['invoice_number'],
+            'invoice_number' => $number,
             'term' => $data['term'],
             'description' => $data['description'] ?? null,
             'amount' => $data['amount'],

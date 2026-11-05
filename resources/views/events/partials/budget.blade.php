@@ -2,8 +2,10 @@
     $versions = $event->budgetVersions;
     $current = $budget ?: $versions->first();
     $items = $current?->items ?? collect();
-    $totalPlanned = (float) $items->sum('planned_amount');
-    $totalActual = (float) $items->sum('actual_amount');
+    $projectValue = (float) ($event->contract_value ?? $financials['planned'] ?? 0);
+    $paidTotal = (float) ($financials['paid'] ?? 0);
+    $expenseTotal = (float) ($financials['actual'] ?? 0);
+    $eventPnl = $projectValue - $expenseTotal;
 @endphp
 
 <section id="budget" class="scroll-mt-24">
@@ -28,10 +30,11 @@
         </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-3">
-        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Rencana</div><div class="mt-1 text-xl font-extrabold"><x-money :value="$totalPlanned" /></div></div>
-        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Realisasi</div><div class="mt-1 text-xl font-extrabold"><x-money :value="$totalActual" /></div></div>
-        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Variance</div><div class="mt-1 text-xl font-extrabold" style="color: {{ $totalActual > $totalPlanned ? 'var(--danger)' : 'var(--success)' }}"><x-money :value="$totalActual - $totalPlanned" /></div></div>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Nilai Project (omzet)</div><div class="mt-1 text-xl font-extrabold"><x-money :value="$projectValue" /></div></div>
+        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Sudah Dibayar</div><div class="mt-1 text-xl font-extrabold" style="color: var(--success)"><x-money :value="$paidTotal" /></div></div>
+        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Total Expense</div><div class="mt-1 text-xl font-extrabold"><x-money :value="$expenseTotal" /></div></div>
+        <div class="card card-pad"><div class="text-xs font-semibold" style="color: var(--muted)">Total PnL</div><div class="mt-1 text-xl font-extrabold" style="color: {{ $eventPnl >= 0 ? 'var(--success)' : 'var(--danger)' }}"><x-money :value="$eventPnl" /></div></div>
     </div>
 
     @if (auth()->user()->canFinanceEvent($event))

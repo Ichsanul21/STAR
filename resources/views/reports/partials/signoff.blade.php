@@ -7,4 +7,4 @@
     </tr>
 </table>
 
-<div class="footer">Disiapkan oleh STAR — Supported by Alenkosa · {{ $event->code }} · Laporan v{{ $report->version }}</div>
+<div class="footer">Disiapkan oleh STAR — Supported by Alenkosa · {{ $event->code }} · {{ $report->report_number ?: 'Laporan v'.$report->version }}</div>

@@ -69,7 +69,7 @@
             </div>
             <form method="POST" action="{{ route('invoices.store', $event) }}" class="grid gap-3 md:grid-cols-3">
                 @csrf
-                <div><label class="label">No. Invoice</label><input name="invoice_number" class="input" required placeholder="INV-{{ $event->code }}-01"></div>
+                <div><label class="label">No. Invoice</label><input name="invoice_number" class="input" placeholder="Otomatis" data-invoice-number value="{{ old('invoice_number') }}"></div>
                 <div><label class="label">Termin</label>
                     <select name="term" class="input" required data-creatable>
                         <option value="">Pilih termin…</option>

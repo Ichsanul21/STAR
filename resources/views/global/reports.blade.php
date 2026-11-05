@@ -36,14 +36,17 @@
                             <a href="{{ route('events.tab', [$report->event, 'reports']) }}" class="font-semibold hover:underline">{{ $report->event?->name }}</a>
                             <div class="text-xs" style="color: var(--muted)">{{ $report->event?->code }}</div>
                         </td>
-                        <td>v{{ $report->version }}</td>
+                        <td>
+                            <div class="font-semibold">{{ $report->report_number ?: '—' }}</div>
+                            <div class="text-xs" style="color: var(--muted)">v{{ $report->version }}</div>
+                        </td>
                         <td><x-status :status="$report->status" /></td>
                         <td class="whitespace-nowrap text-xs">{{ $report->created_at->format('d/m/Y H:i') }}</td>
                         <td class="whitespace-nowrap text-xs">{{ $report->published_at?->format('d/m/Y H:i') ?: '—' }}</td>
                         <td>
                             <div class="flex gap-1">
-                                <a href="{{ route('reports.preview', $report) }}" class="btn btn-secondary btn-sm" data-preview="html" data-preview-title="Preview {{ $report->event?->name }} v{{ $report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">Preview</a>
-                                @if ($report->pdf_path)<a href="{{ route('reports.pdf', $report) }}" class="btn btn-ghost btn-sm" data-preview="pdf" data-preview-title="PDF {{ $report->event?->name }} v{{ $report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">PDF</a>@endif
+                                <a href="{{ route('reports.preview', $report) }}" class="btn btn-secondary btn-sm" data-preview="html" data-preview-title="Preview {{ $report->report_number ?: $report->event?->name.' v'.$report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">Preview</a>
+                                @if ($report->pdf_path)<a href="{{ route('reports.pdf', $report) }}" class="btn btn-ghost btn-sm" data-preview="pdf" data-preview-title="PDF {{ $report->report_number ?: $report->event?->name.' v'.$report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">PDF</a>@endif
                             </div>
                         </td>
                     </tr>

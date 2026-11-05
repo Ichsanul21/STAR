@@ -409,7 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         sidebarScrollTrack.hidden = false;
-        sidebarScrollTrack.style.top = `${sidebarNav.offsetTop}px`;
+
+        const sidebarBox = sidebar.getBoundingClientRect();
+        const navBox = sidebarNav.getBoundingClientRect();
+
+        sidebarScrollTrack.style.top = `${navBox.top - sidebarBox.top}px`;
         sidebarScrollTrack.style.height = `${sidebarNav.clientHeight}px`;
 
         const thumbHeight = Math.max(18, sidebarNav.clientHeight * (sidebarNav.clientHeight / sidebarNav.scrollHeight));
@@ -480,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {}
 
         if (desktop) {
-            const to = isCollapsing ? 42 : 268;
+            const to = isCollapsing ? 42 : 188;
             const token = ++sidebarToggleToken;
             sidebar.style.transition = 'none';
 

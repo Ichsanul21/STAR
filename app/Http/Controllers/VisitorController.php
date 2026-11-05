@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\EventResult;
 use App\Models\SalesRecord;
 use App\Models\VisitorEntry;
+use App\Services\NumberingService;
 use Illuminate\Http\Request;
 
 class VisitorController extends Controller
@@ -59,7 +60,7 @@ class VisitorController extends Controller
         return back()->with('success', 'Data pengunjung disimpan.');
     }
 
-    public function storeSale(Request $request, Event $event)
+    public function storeSale(Request $request, Event $event, NumberingService $numbering)
     {
         $this->authorizeManage($event);
 
@@ -71,6 +72,14 @@ class VisitorController extends Controller
             'sold_at' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        if (trim((string) ($data['spk_number'] ?? '')) === '') {
+            $data['spk_number'] = $numbering->next('spk', [
+                'event' => $event,
+                'event_code' => $event->code,
+                'dealer_code' => $event->dealer?->code,
+            ]);
+        }
 
         SalesRecord::create(['event_id' => $event->id] + $data);
 

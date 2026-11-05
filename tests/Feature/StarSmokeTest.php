@@ -3,12 +3,18 @@
 namespace Tests\Feature;
 
 use App\Models\BudgetItem;
+use App\Models\ClientInvoice;
 use App\Models\Event;
 use App\Models\Expense;
+use App\Models\ReportVersion;
+use App\Models\SalesRecord;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\AppSetting;
 use App\Services\FinanceService;
+use App\Services\NumberingService;
 use App\Services\ProgressService;
+use App\Services\ReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -563,6 +569,104 @@ class StarSmokeTest extends TestCase
             'start_at' => '2026-06-05T08:00',
             'due_at' => '2026-06-01T17:00',
         ])->assertSessionHasErrors('due_at');
+    }
+
+    public function test_numbering_service_generates_sequential_numbers(): void
+    {
+        $service = app(NumberingService::class);
+
+        $first = $service->next('event');
+        $second = $service->next('event');
+
+        $this->assertMatchesRegularExpression('/^EVT-\d{6}-0001$/', $first);
+        $this->assertMatchesRegularExpression('/^EVT-\d{6}-0002$/', $second);
+        $this->assertMatchesRegularExpression('/^EVT-\d{6}-0001$/', $service->preview('event'));
+    }
+
+    public function test_event_creation_uses_auto_numbering(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $dealer = \App\Models\Dealer::firstOrFail();
+
+        $this->actingAs($admin)->post('/events', [
+            'dealer_id' => $dealer->id,
+            'name' => 'Event Numbering Test',
+            'type' => 'activation',
+            'location' => 'Jakarta',
+            'city' => 'Jakarta',
+            'start_date' => now()->addDays(10)->toDateString(),
+            'end_date' => now()->addDays(11)->toDateString(),
+            'capture_mode' => 'upload_or_camera',
+            'contract_value' => 1000000,
+        ])->assertRedirect();
+
+        $event = Event::where('name', 'Event Numbering Test')->firstOrFail();
+
+        $this->assertMatchesRegularExpression('/^EVT-\d{6}-\d{4}$/', $event->code);
+    }
+
+    public function test_invoice_number_is_generated_when_blank(): void
+    {
+        $finance = User::where('email', 'finance@star.test')->firstOrFail();
+        $event = Event::firstOrFail();
+
+        $this->actingAs($finance)->post('/invoices', [
+            'event_id' => $event->id,
+            'invoice_number' => '',
+            'term' => 'Termin Otomatis',
+            'amount' => 1000,
+            'due_date' => now()->addDays(7)->toDateString(),
+        ])->assertRedirect();
+
+        $invoice = ClientInvoice::where('event_id', $event->id)->where('term', 'Termin Otomatis')->firstOrFail();
+
+        $this->assertMatchesRegularExpression('/^INV-'.preg_quote($event->code, '/').'-02$/', $invoice->invoice_number);
+    }
+
+    public function test_report_number_is_generated(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $event = Event::firstOrFail();
+
+        $report = app(ReportService::class)->generate($event, $admin);
+
+        $this->assertNotNull($report->report_number);
+        $this->assertMatchesRegularExpression('/^RPT-'.preg_quote($event->code, '/').'-01$/', $report->report_number);
+    }
+
+    public function test_spk_number_is_generated_when_blank(): void
+    {
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $event = Event::firstOrFail();
+
+        $this->actingAs($admin)->post('/events/'.$event->id.'/sales', [
+            'model' => 'Honda Test',
+            'unit_price' => 1000000,
+            'spk_number' => '',
+            'status' => 'spk',
+        ])->assertRedirect();
+
+        $sale = SalesRecord::where('event_id', $event->id)->where('model', 'Honda Test')->firstOrFail();
+
+        $this->assertMatchesRegularExpression('/^SPK-\d{6}-0001$/', $sale->spk_number);
+    }
+
+    public function test_numbering_settings_can_be_updated_by_eo_admin_only(): void
+    {
+        $eo = User::where('email', 'eo@star.test')->firstOrFail();
+        $finance = User::where('email', 'finance@star.test')->firstOrFail();
+
+        $formats = [
+            'event_format' => 'EVT-{YY}{MM}-{seq:3}',
+            'invoice_format' => 'INV-{event}-{seq:3}',
+            'spk_format' => 'SPK-{YY}{MM}-{seq:3}',
+            'report_format' => 'RPT-{event}-{seq:3}',
+        ];
+
+        $this->actingAs($eo)->patch('/settings/numbering', $formats)->assertRedirect();
+        $this->assertSame('EVT-{YY}{MM}-{seq:3}', AppSetting::get('numbering.event'));
+
+        $this->actingAs($finance)->patch('/settings/numbering', $formats)->assertForbidden();
     }
 
     public function test_super_admin_can_create_dealer_and_user(): void

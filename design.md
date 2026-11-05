@@ -438,7 +438,7 @@ Don't:
 ## 18. App shell v2 (light navy)
 
 - Shell background `#eef2f7`; content is a white rounded card with soft shadow (desktop >=1024px), full-bleed on mobile.
-- Sidebar: light navy gradient `#e9f0f8 -> #dfe9f5`, 268px, rounded 24px, brand mark + STAR wordmark, uppercase section labels (Menu, Keuangan, Dokumentasi, Sistem, Admin, Umum).
+- Sidebar: light navy gradient `#e9f0f8 -> #dfe9f5`, 188px expanded on desktop (30% narrower than 268px), rounded 24px, brand mark + STAR wordmark, uppercase section labels (Menu, Keuangan, Dokumentasi, Sistem, Admin, Umum).
 - Nav items: 19px line icons, 13px labels, active = soft pill `#cfdeee` + 3px navy bar, count badges (all brand navy), hover tint.
 - Desktop collapse toggle: 42px icon rail, labels/section text hidden, badges repositioned, icons centered, custom tooltip on hover; state persisted in `localStorage`. The toggle is a circular handle centered on the sidebar’s right edge.
 - Brand mark, module icons, notification bell, and profile avatar share the same left icon column when expanded and the same center line when collapsed.
@@ -461,7 +461,7 @@ Don't:
 
 - Layout: KPI row (4: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client), then independent main/side columns so cards keep their natural height instead of stretching to the tallest card.
 - Main column: performance chart (with avg progress/absorption/event stats), progress per event + status donut, finance comparison chart, activity log. Side column: agenda, active events, deadlines, team activity.
-- Charts use Chart.js (lazy-loaded only on dashboard): vertical grouped bars for progress vs budget absorption with percentage labels above each bar (y-axis capped at 100%), doughnut for task status, and a finance comparison chart (bars for Pendapatan/Expenses, lines for PnL/Piutang) with toggle chips per series; toggle state persists in `localStorage`.
+- Charts use Chart.js (lazy-loaded only on dashboard): vertical grouped bars for progress vs budget absorption with percentage labels above each bar (y-axis capped at 100%), doughnut for task status, and a finance comparison chart (bars for Pendapatan/Expenses, lines for PnL/Piutang) with toggle chips per series; toggle state persists in `localStorage`. Finance summary shows Nilai Project (omzet), Sudah Dibayar, Total Expense, and Total PnL.
 - Deadline card lists the four nearest open tasks with countdown badges (`Terlambat X hari` danger, `Hari ini` / `Besok` / `≤3 hari` warning, `>3 hari` muted). No time tracker.
 - Realtime via Laravel Reverb + Echo: each user subscribes to `private-App.Models.User.{id}`; new notifications update sidebar/popover counts instantly and show a dismissible navy-accent toast bottom-right (8s, clickable to the notification list). Broadcasts are queued after commit and sent to the local Reverb API (`127.0.0.1`), while the browser uses the public WSS endpoint; without a Reverb connection the UI behaves as before.
 - All figures are scoped to events the user can see; dealer users are redirected to the portal.
@@ -486,6 +486,8 @@ Don't:
 - Below 1280px fields wrap into tidy rows with equal heights (38px) and aligned labels; Activity Log uses two explicit rows (main filters, then date range + actions).
 - Controls use 12px text and 38px height so native inputs, Tom Select controls, and buttons align on one baseline.
 - Tom Select wrapper resets border/padding/background (Tom Select adds an `.input` state class) so only `.ts-control` draws the border.
+- Placeholder hides on focus/open when the value is empty and returns on close; empty `<option value="">` items are treated as placeholders, not selected values.
+- Remote selects/autocomplete inputs preload options on focus and show loading/empty states.
 
 ### Notifications
 - Sidebar card replaces the install-app promo: total unread + Tugas/Keuangan/Laporan counts, each linking to `/notifications?type=...`.
@@ -494,8 +496,9 @@ Don't:
 - Expense approval/rejection notifies the creator; expense submission is surfaced through the action inbox instead of a duplicate stored notification. Preferences still filter stored notifications.
 
 ### Sidebar scrollbar
-- `scrollbar-width: thin` with transparent thumb; hover changes thumb to navy.
-- WebKit: 4px scrollbar, transparent track, navy thumb on hover, buttons hidden.
+- Custom overlay scrollbar (native scrollbar hidden), navy thumb, no arrow buttons.
+- Track appears only while hovering module items; thumb is absolutely positioned and follows `scrollTop` (2px expanded, 1px collapsed).
+- `min-height: 0` on the nav keeps it as the internal scroll container.
 
 ## 24. Developer role and impersonation
 
@@ -505,3 +508,11 @@ Don't:
 - Dev Tools page: environment/drivers, table counts, failed jobs, latest log tail, route list, impersonation panel, dev sessions, force task status, unpublish report, hard delete by type/ID, cache/reconcile actions, reseed demo, and empty reset.
 - Reset modes: `RESEED` runs `dev:reset --demo`; `DELETE ALL` runs `dev:reset --empty` (schema + dev account + lookups only). Both force logout and show a notice on the login page.
 - Audit visibility: activity log rows whose actor is `dev` are hidden from non-developers; developers see them. Impersonated actions are attributed to the target user (and remain visible as that user). Event/workspace/dashboard activity feeds apply the same scope.
+
+## 25. Auto-numbering
+
+- Settings ? Penomoran Otomatis (EO Admin/Super Admin/dev) controls formats for event, invoice, SPK, and report.
+- Tokens: `{prefix}`, `{YYYY}`, `{YY}`, `{MM}`, `{DD}`, `{seq}`, `{seq:4}`, `{event}`, `{dealer}`, `{random:4}`; format must contain `{seq}`.
+- `number_sequences` holds locked counters per type + scope; existing numbers are skipped on collision.
+- Invoice/report sequences are per event when the format includes `{event}`, otherwise per period; event codes are per month, SPK per event.
+- Report numbers appear in the reports list, preview/PDF cover, portal, and downloaded filenames; old reports fall back to `v{version}`.

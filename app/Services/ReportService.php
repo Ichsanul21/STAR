@@ -28,7 +28,7 @@ class ReportService
         'signoff' => 'Sign-off',
     ];
 
-    public function __construct(private FinanceService $finance)
+    public function __construct(private FinanceService $finance, private NumberingService $numbering)
     {
     }
 
@@ -69,6 +69,14 @@ class ReportService
         $report = ReportVersion::create([
             'event_id' => $event->id,
             'version' => $version,
+            'report_number' => $this->numbering->next(
+                'report',
+                [
+                    'event' => $event,
+                    'event_code' => $event->code,
+                ],
+                fn (string $number) => ReportVersion::query()->where('report_number', $number)->exists(),
+            ),
             'status' => 'draft',
             'snapshot' => $snapshot,
             'narrative' => array_merge([

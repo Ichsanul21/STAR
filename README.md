@@ -47,13 +47,13 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Conflict inbox with field-level diff (submitted vs current server values), open/resolved workflow, and reload banner on conflict.
 - Offline queue browser with retry, discard, and merge dialog (compare with current server record, apply server version/values).
 - Per-user notification preferences; default event view (cards/list) saved from the Events page.
-- Searchable selects everywhere (Tom Select) with creatable categories/units/terms; vehicle models managed by EO Admin in Master Data.
+- Searchable selects everywhere (Tom Select) with creatable categories/units/terms; vehicle models managed by EO Admin in Master Data. Placeholders hide on open, and remote selects preload options on focus.
 - Global create modals for expenses (choose event, dependent budget item) and payments (create invoice, record payment), scoped to the user's event access.
 - Three-way per-field conflict merge (base/submitted/server) with automatic non-conflicting resolution and manual choice for disputed fields.
 - Compact one-line filter toolbars (search + selects + dates + Filter/Reset) across global pages, wrapping cleanly on smaller screens.
 - Dashboard KPIs: Event Aktif, Task Perlu Perhatian, Total PnL, Outstanding Client; performance card uses a Chart.js vertical grouped bar chart with percentage labels for progress vs budget absorption; a finance comparison chart shows Pendapatan, Expenses, PnL, and Piutang per event with on/off series toggles; progress card includes per-event progress; deadline card lists the nearest deadlines with countdown badges. The dashboard notification card was removed (notifications live in the sidebar inbox/popover).
 - Sidebar notification card with aligned category counts (Tugas, Keuangan, Laporan), hover/active states; the collapsed bell opens a compact 216px vertical popover (“Notifikasi {total}” + category counts + “Lihat semua”, no subtitle/latest list). Counts combine unread notifications with an action inbox (pending expense approvals, due tasks, draft reports).
-- Collapsible desktop sidebar (42px icon rail, shared icon column, hover tooltips), edge-centered toggle handle, 280ms collapse/expand animation, auto-scroll to the active menu item, and a custom overlay scrollbar shown only on module hover (2px expanded, 1px collapsed).
+- Collapsible desktop sidebar (188px expanded, 42px icon rail, shared icon column, hover tooltips), edge-centered toggle handle, 280ms collapse/expand animation, auto-scroll to the active menu item, and a custom overlay scrollbar shown only on module hover (2px expanded, 1px collapsed) whose thumb follows scrolling.
 - Preview modal with a metadata side panel (file info, uploader, event/phase/task, GPS + OpenStreetMap embed).
 - Global search field centered in the desktop topbar (max 520px) via a 3-column grid; the burger menu only shows below 1024px.
 - Dealer/user edit plus activate/deactivate, with guards for active events and last Super Admin.
@@ -64,6 +64,7 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Forward-only task updates with mandatory note + optional photo, immutable history, and reviewer/PM revision tasks.
 - Detailed activity audit log; EO Admin sees activity, Super Admin additionally sees IP/device/browser/platform.
 - RAB planning/final/realization, expenses + approval, client invoices/payments.
+- Auto-numbering for event codes, invoices, SPK, and reports with configurable formats and tokens (`{YYYY}`, `{MM}`, `{seq:4}`, `{event}`, etc.); formats are managed by EO Admin/Super Admin in Settings, with sequence locking and collision skipping.
 - XLSX import with column mapping for RAB, planning, and rundown.
 - Photo documentation: GPS + timestamp required, camera-only getUserMedia, server-side watermark + OSM map.
 - PWA/IndexedDB offline queue for photos, expenses, and visitor forms.

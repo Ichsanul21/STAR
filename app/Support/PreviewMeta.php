@@ -126,6 +126,7 @@ class PreviewMeta
         return [
             'groups' => self::filter([
                 self::group('Laporan', [
+                    ['No. Laporan', $report->report_number ?: '—'],
                     ['Versi', 'v'.$report->version],
                     ['Status', $report->status],
                     ['Dibuat', $report->created_at?->format('d/m/Y H:i')],

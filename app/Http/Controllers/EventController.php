@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Services\EventCurveService;
 use App\Services\EventSetupService;
 use App\Services\FinanceService;
+use App\Services\NumberingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -46,7 +47,7 @@ class EventController extends Controller
         return view('events.index', compact('events', 'dealers', 'search', 'status', 'defaultView'));
     }
 
-    public function store(Request $request, EventSetupService $setup)
+    public function store(Request $request, EventSetupService $setup, NumberingService $numbering)
     {
         abort_unless(in_array(auth()->user()->role, ['super_admin', 'eo_admin', 'pm_event', 'dev'], true), 403);
 
@@ -66,7 +67,12 @@ class EventController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        $data['code'] = 'EVT-'.now()->format('Ym').'-'.Str::upper(Str::random(4));
+        $dealer = Dealer::find($data['dealer_id']);
+        $data['code'] = $numbering->next(
+            'event',
+            ['dealer_code' => $dealer?->code],
+            fn (string $number) => Event::query()->where('code', $number)->exists(),
+        );
         $data['created_by'] = auth()->id();
         $data['status'] = 'active';
 

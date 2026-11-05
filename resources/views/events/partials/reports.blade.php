@@ -18,7 +18,10 @@
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="font-bold">Laporan v{{ $report->version }}</span>
+                            <span class="font-bold">Laporan {{ $report->report_number ?: 'v'.$report->version }}</span>
+                            @if ($report->report_number)
+                                <span class="badge badge-muted">v{{ $report->version }}</span>
+                            @endif
                             <x-status :status="$report->status" />
                         </div>
                         <div class="mt-1 text-xs" style="color: var(--muted)">
@@ -28,9 +31,9 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('reports.preview', $report) }}" class="btn btn-secondary btn-sm" data-preview="html" data-preview-title="Preview Laporan v{{ $report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">Preview</a>
+                        <a href="{{ route('reports.preview', $report) }}" class="btn btn-secondary btn-sm" data-preview="html" data-preview-title="Preview Laporan {{ $report->report_number ?: 'v'.$report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">Preview</a>
                         @if ($report->pdf_path)
-                            <a href="{{ route('reports.pdf', $report) }}" class="btn btn-secondary btn-sm" data-preview="pdf" data-preview-title="PDF Laporan v{{ $report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">PDF</a>
+                            <a href="{{ route('reports.pdf', $report) }}" class="btn btn-secondary btn-sm" data-preview="pdf" data-preview-title="PDF Laporan {{ $report->report_number ?: 'v'.$report->version }}" data-preview-meta="{{ json_encode(\App\Support\PreviewMeta::report($report)) }}">PDF</a>
                         @endif
                         @if ($report->xlsx_path)
                             <a href="{{ route('reports.xlsx', $report) }}" class="btn btn-secondary btn-sm">Excel</a>

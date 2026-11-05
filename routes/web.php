@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/master-data/lookups/{lookup}/toggle', [GlobalController::class, 'toggleLookup'])->name('global.lookups.toggle');
     Route::get('/settings', [GlobalController::class, 'settings'])->name('global.settings');
     Route::patch('/settings', [GlobalController::class, 'updateSettings'])->name('global.settings.update');
+    Route::patch('/settings/numbering', [GlobalController::class, 'updateNumbering'])->name('global.settings.numbering');
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     Route::get('/activity-logs/{activityLog}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
     Route::get('/offline', fn () => view('offline.index'))->name('offline.index');

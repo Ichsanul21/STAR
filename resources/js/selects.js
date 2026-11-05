@@ -1,6 +1,30 @@
 import TomSelect from 'tom-select';
 import 'tom-select/dist/css/tom-select.css';
 
+const wirePlaceholder = (ts, placeholder) => {
+    const update = (hide) => {
+        const value = ts.getValue();
+        const empty = Array.isArray(value) ? value.length === 0 : !value;
+
+        ts.wrapper.classList.toggle('ts-placeholder-hidden', hide && empty);
+        ts.control_input.placeholder = hide && empty ? '' : (empty ? placeholder : '');
+    };
+
+    ts.on('focus', () => update(true));
+    ts.on('open', () => update(true));
+    ts.on('open', () => {
+        if (!ts.dropdown.querySelector('.option') && Object.keys(ts.options).length > 0) {
+            ts.refreshOptions(false);
+        }
+
+        ts.positionDropdown();
+    });
+    ts.on('blur', () => update(false));
+    ts.on('close', () => update(false));
+    ts.on('change', () => update(ts.isOpen));
+    update(false);
+};
+
 const enhance = (el) => {
     if (el.tomselect || el.dataset.native !== undefined) {
         return;
@@ -30,6 +54,8 @@ const enhance = (el) => {
             option: (data, escape) => `<div class="ts-option">${escape(data.text)}</div>`,
             item: (data, escape) => `<div class="ts-item">${escape(data.text)}</div>`,
             option_create: (data, escape) => `<div class="ts-create">Tambah <b>${escape(data.input)}</b>…</div>`,
+            no_results: () => '<div class="ts-no-results">Tidak ada hasil</div>',
+            loading: () => '<div class="ts-no-results">Memuat…</div>',
         },
     };
 
@@ -38,16 +64,19 @@ const enhance = (el) => {
         settings.valueField = 'value';
         settings.labelField = 'text';
         settings.searchField = ['text'];
+        settings.preload = 'focus';
         settings.load = async (query, callback) => {
             try {
                 const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}q=${encodeURIComponent(query)}`, {
                     headers: { 'Accept': 'application/json' },
                 });
+
                 if (!response.ok) {
                     callback();
 
                     return;
                 }
+
                 const json = await response.json();
                 callback(json.items || json);
             } catch (error) {
@@ -57,7 +86,8 @@ const enhance = (el) => {
         settings.shouldLoad = () => true;
     }
 
-    new TomSelect(el, settings);
+    const ts = new TomSelect(el, settings);
+    wirePlaceholder(ts, settings.placeholder);
 };
 
 const enhanceAll = (root = document) => {
@@ -93,11 +123,14 @@ const enhanceAll = (root = document) => {
             render: {
                 option: (data, escape) => `<div class="ts-option">${escape(data.text)}</div>`,
                 item: (data, escape) => `<div class="ts-item">${escape(data.text)}</div>`,
+                no_results: () => '<div class="ts-no-results">Tidak ada hasil</div>',
+                loading: () => '<div class="ts-no-results">Memuat…</div>',
             },
         };
 
         if (input.dataset.remote) {
             const url = input.dataset.remote;
+            settings.preload = 'focus';
             settings.load = async (query, callback) => {
                 try {
                     const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}q=${encodeURIComponent(query)}`, {
@@ -117,7 +150,8 @@ const enhanceAll = (root = document) => {
             settings.shouldLoad = () => true;
         }
 
-        new TomSelect(input, settings);
+        const ts = new TomSelect(input, settings);
+        wirePlaceholder(ts, settings.placeholder);
     });
 };
 
