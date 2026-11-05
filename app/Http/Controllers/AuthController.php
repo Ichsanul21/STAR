@@ -47,7 +47,6 @@ class AuthController extends Controller
         abort_unless(config('app.demo_login'), 404);
 
         $accounts = [
-            'dev' => 'dev@star.test',
             'admin' => 'admin@star.test',
             'eo' => 'eo@star.test',
             'finance' => 'finance@star.test',
@@ -62,10 +61,6 @@ class AuthController extends Controller
         ];
 
         abort_unless(isset($accounts[$account]), 404);
-
-        if ($account === 'dev' && ! config('app.dev_tools')) {
-            abort(404);
-        }
 
         $user = \App\Models\User::where('email', $accounts[$account])->where('is_active', true)->firstOrFail();
 

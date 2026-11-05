@@ -54,22 +54,19 @@
                     </div>
 
                     <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                        @foreach (array_merge(
-                            config('app.dev_tools') ? ['dev' => 'Developer'] : [],
-                            [
-                                'admin' => 'Super Admin',
-                                'eo' => 'EO Admin',
-                                'finance' => 'Finance',
-                                'pm' => 'PM Event',
-                                'field' => 'Field Crew',
-                                'pic' => 'PIC Divisi',
-                                'reviewer' => 'Reviewer',
-                                'dealer-jkt' => 'Dealer Jakarta',
-                                'dealer-bdg' => 'Dealer Bandung',
-                                'dealer-sby' => 'Dealer Surabaya',
-                                'dealer-viewer' => 'Dealer Viewer',
-                            ]
-                        ) as $key => $label)
+                        @foreach ([
+                            'admin' => 'Super Admin',
+                            'eo' => 'EO Admin',
+                            'finance' => 'Finance',
+                            'pm' => 'PM Event',
+                            'field' => 'Field Crew',
+                            'pic' => 'PIC Divisi',
+                            'reviewer' => 'Reviewer',
+                            'dealer-jkt' => 'Dealer Jakarta',
+                            'dealer-bdg' => 'Dealer Bandung',
+                            'dealer-sby' => 'Dealer Surabaya',
+                            'dealer-viewer' => 'Dealer Viewer',
+                        ] as $key => $label)
                             <form method="POST" action="{{ route('demo.login', $key) }}">
                                 @csrf
                                 <button type="submit" class="btn btn-secondary btn-sm w-full justify-between">
