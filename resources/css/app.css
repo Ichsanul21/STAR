@@ -2921,6 +2921,8 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     text-align: right;
 }
 .dev-console-nav {
+    position: sticky;
+    top: 18px;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -2945,10 +2947,12 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     background: var(--brand);
     color: #fff;
 }
-@media (max-width: 1279.98px) {
+@media (max-width: 767.98px) {
     .dev-console-nav {
+        position: static;
         flex-direction: row;
-        overflow-x: auto;
+        flex-wrap: wrap;
+        overflow: visible;
     }
     .dev-console-link {
         flex: none;
@@ -2980,11 +2984,4 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     color: var(--muted);
     font-size: 10px;
     font-weight: 500;
-}
-
-@media (max-width: 1279.98px) {
-    .dev-console-nav {
-        flex-wrap: wrap;
-        overflow: visible;
-    }
 }

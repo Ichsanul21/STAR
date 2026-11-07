@@ -35,7 +35,7 @@
     </div>
 </div>
 
-<div class="mt-5 grid items-start gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
+<div class="mt-5 grid items-start gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
     <aside class="card dev-console-nav">
         @foreach ($tabs as $key => [$label, $icon])
             <a href="{{ route('dev.index', ['section' => $key]) }}" class="dev-console-link {{ $section === $key ? 'is-active' : '' }}">
