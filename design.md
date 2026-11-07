@@ -505,7 +505,7 @@ Don't:
 - Role `dev` (label “Developer”) is a dev-only superuser: bypasses event/module authorization and immutable guards (task status, final RAB, published report, approved expense) for testing.
 - Env gates: `DEV_TOOLS_ENABLED`, `DEV_IMPERSONATION_ENABLED`, `DEV_ALLOW_RESET`; when disabled the `/dev/*` routes return 404 and the dev account cannot log in.
 - Real impersonation: Developer selects any active user, session switches to that user, sticky banner shows “Mode simulasi” with a return button. Impersonation start/stop is stored in `dev_sessions` (developer-only), not in the activity log.
-- Dev Tools page: environment/drivers, table counts, failed jobs, latest log tail, route list, impersonation panel, dev sessions, force task status, unpublish report, hard delete by type/ID, cache/reconcile actions, reseed demo, and empty reset.
+- Developer Console: sectioned subnav (Ringkasan, Masuk Sebagai, Maintenance, Data, Sinkronisasi, Log, Fitur, SQL, Nomor, Watermark) with environment/drivers, table counts, failed jobs, latest log tail, route list, impersonation panel, dev sessions, read-only SQL runner, numbering/watermark settings, force task status, unpublish report, hard delete by type/ID, cache/reconcile actions, reseed demo, and empty reset.
 - Reset modes: `RESEED` runs `dev:reset --demo`; `DELETE ALL` runs `dev:reset --empty` (schema + dev account + lookups only). Both force logout and show a notice on the login page.
 - Audit visibility: activity log rows whose actor is `dev` are hidden from non-developers; developers see them. Impersonated actions are attributed to the target user (and remain visible as that user). Event/workspace/dashboard activity feeds apply the same scope.
 
@@ -519,7 +519,7 @@ Don't:
 
 ## 26. Dynamic watermark
 
-- Dev Tools controls `watermark.enabled`, `watermark.line1`, `watermark.line2`, `watermark.opacity`, `watermark.color`, and `watermark.speed` in `app_settings`.
+- Developer Console controls `watermark.enabled`, `watermark.login_enabled`, `watermark.line1`, `watermark.line2`, `watermark.opacity`, `watermark.color`, `watermark.speed`, and `watermark.font_size` in `app_settings`, plus Halus/Standar/Tegas presets.
 - Line 1 defaults to `Copyright of Alenkosa - Your IT Solutions`; line 2 supports `{ip}`, `{device}`, `{timestamp}`, `{user}` (plus `$IP_Address`, `$Devices`, `$Timestamps`, `$User` aliases).
 - App UI renders 7 diagonal bands of repeating two-line tiles, animated as a continuous train; fixed overlay, configurable opacity/color/speed, no pointer events, z-index below sidebar/topbar/modals.
 - PDF reports render a static diagonal repeating watermark on every page using the watermark context captured when the report is generated (stored in the report snapshot); PDF uses the configured opacity and color (speed is UI-only).

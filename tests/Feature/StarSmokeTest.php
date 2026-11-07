@@ -679,21 +679,29 @@ class StarSmokeTest extends TestCase
 
         $this->actingAs($dev)->get('/dev')
             ->assertOk()
-            ->assertSee('Watermark UI & PDF', false);
+            ->assertSee('Developer Console');
+
+        $this->actingAs($dev)->get('/dev?section=watermark')
+            ->assertOk()
+            ->assertSee('Watermark keamanan');
 
         $this->actingAs($dev)->post('/dev/watermark', [
             'enabled' => '1',
+            'login_enabled' => '1',
             'line1' => 'Copyright Test Alenkosa',
             'line2' => '{ip} - {user}',
             'opacity' => '0.120',
             'color' => '#123456',
             'speed' => '45',
+            'font_size' => '14',
         ])->assertRedirect();
 
         $this->assertSame('1', AppSetting::get('watermark.enabled'));
+        $this->assertSame('1', AppSetting::get('watermark.login_enabled'));
         $this->assertSame('0.120', AppSetting::get('watermark.opacity'));
         $this->assertSame('#123456', AppSetting::get('watermark.color'));
         $this->assertSame('45', AppSetting::get('watermark.speed'));
+        $this->assertSame('14', AppSetting::get('watermark.font_size'));
 
         $this->actingAs($admin)->get('/dashboard')
             ->assertOk()
@@ -714,12 +722,47 @@ class StarSmokeTest extends TestCase
 
         $this->actingAs($finance)->post('/dev/watermark', [
             'enabled' => '1',
+            'login_enabled' => '0',
             'line1' => 'Nope',
             'line2' => '{user}',
             'opacity' => '0.1',
             'color' => '#000000',
             'speed' => '60',
+            'font_size' => '12',
         ])->assertForbidden();
+    }
+
+    public function test_dev_sql_runner_is_read_only(): void
+    {
+        config(['app.dev_tools' => true]);
+
+        $dev = User::where('email', 'dev@star.test')->firstOrFail();
+
+        $this->actingAs($dev)->post('/dev/sql', [
+            'sql' => 'select count(*) as total from users',
+        ])->assertRedirect()->assertSessionHas('sql_result');
+
+        $this->actingAs($dev)->post('/dev/sql', [
+            'sql' => 'delete from users',
+        ])->assertSessionHasErrors('sql');
+    }
+
+    public function test_login_watermark_follows_login_flag(): void
+    {
+        AppSetting::put('watermark.enabled', '1');
+        AppSetting::put('watermark.login_enabled', '1');
+        AppSetting::put('watermark.line1', 'Login Watermark Test');
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('app-watermark', false)
+            ->assertSee('Login Watermark Test');
+
+        AppSetting::put('watermark.login_enabled', '0');
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertDontSee('app-watermark', false);
     }
 
     public function test_super_admin_can_create_dealer_and_user(): void
@@ -1156,7 +1199,8 @@ class StarSmokeTest extends TestCase
         $dev = User::where('email', 'dev@star.test')->firstOrFail();
         $event = Event::firstOrFail();
 
-        $this->actingAs($dev)->get('/dev')->assertOk()->assertSee('Dev Tools')->assertSee('Impersonation');
+        $this->actingAs($dev)->get('/dev')->assertOk()->assertSee('Developer Console');
+        $this->actingAs($dev)->get('/dev?section=impersonation')->assertOk()->assertSee('Pilih user');
         $this->actingAs($dev)->get('/events')->assertOk()->assertSee($event->name);
         $this->actingAs($dev)->get('/expenses')->assertOk();
         $this->actingAs($dev)->get('/activity-logs')->assertOk();

@@ -165,6 +165,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/impersonate/{user}', [DevController::class, 'impersonate'])->name('dev.impersonate');
             Route::post('/cache/clear', [DevController::class, 'clearCache'])->name('dev.cache');
         Route::post('/watermark', [DevController::class, 'updateWatermark'])->name('dev.watermark');
+        Route::post('/sql', [DevController::class, 'runQuery'])->name('dev.sql');
             Route::post('/reconcile', [DevController::class, 'reconcile'])->name('dev.reconcile');
             Route::post('/reset/demo', [DevController::class, 'reseed'])->name('dev.reset.demo');
             Route::post('/reset/empty', [DevController::class, 'resetEmpty'])->name('dev.reset.empty');

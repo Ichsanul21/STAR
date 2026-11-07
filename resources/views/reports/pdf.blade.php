@@ -58,12 +58,12 @@
         }
         .pdf-wm-line1 {
             display: block;
-            font-size: 10px;
+            font-size: inherit;
             font-weight: bold;
         }
         .pdf-wm-line2 {
             display: block;
-            font-size: 8px;
+            font-size: 0.8em;
         }
     </style>
 </head>
@@ -73,7 +73,7 @@
     @endforeach
 
     @if (! empty($watermark['enabled']))
-        <div class="pdf-watermark" style="opacity: {{ $watermark['opacity'] ?? 0.07 }}; color: {{ $watermark['color'] ?? '#0a2540' }};">
+        <div class="pdf-watermark" style="opacity: {{ $watermark['opacity'] ?? 0.07 }}; color: {{ $watermark['color'] ?? '#0a2540' }}; font-size: {{ $watermark['font_size'] ?? 10 }}px;">
             @for ($row = 0; $row < 13; $row++)
                 <div class="pdf-wm-row" style="top: {{ $row * 105 }}px">
                     @for ($col = 0; $col < 4; $col++)

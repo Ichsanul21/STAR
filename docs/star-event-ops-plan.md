@@ -545,7 +545,8 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Jira-like Gantt: zoom levels, today marker, weekend shading, sticky task column, click-to-edit modal, and S-Curve (planned vs actual).
 - Master Data can create dealers/users (Super Admin); Settings covers profile, password, app info, and EO Admin auto-numbering formats for event/invoice/SPK/report.
 - Auto-numbering uses locked `number_sequences`, configurable token formats, and collision skipping; report numbers appear on the report list, PDF cover, portal, and filenames.
-- Dynamic UI/PDF watermark uses `app_settings` and is configured in Dev Tools (on/off, text, opacity, color, speed); PDF snapshots keep the watermark context captured at generation time.
+- Dynamic UI/PDF watermark uses `app_settings` and is configured in Dev Tools (on/off, login visibility, text, opacity, color, speed, font size, presets); PDF snapshots keep the watermark context captured at generation time.
+- Developer Console is split into a sectioned subnav (overview, impersonation, maintenance, data, sync, logs, features, SQL, numbering, watermark) with a read-only SQL runner (`SELECT/SHOW/DESCRIBE/EXPLAIN` only).
 
 ## 18. Remaining backlog
 
@@ -590,7 +591,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Desktop sidebar is 188px expanded and collapses to a 42px icon rail (persisted in localStorage) with centered icons and hover tooltips; the toggle is a circular handle centered on the right edge. Brand, nav, notification and profile icons share one column; the active item auto-scrolls into view. The custom overlay scrollbar appears only while hovering module items (2px expanded, 1px collapsed) and its thumb follows the nav scroll position. Collapse/expand uses a 280ms width animation with a final-state fallback.
 - Notifications page gains category tabs (Semua/Tugas/Keuangan/Laporan) and a “Perlu tindakan” action inbox derived from pending expense approvals, tasks due within 7 days, and draft reports ready to publish; stored unread notifications are combined into the counts.
 
-## 23. Developer role and Dev Tools (implemented)
+## 23. Developer Console (implemented)
 
 - Added `dev` role with env-gated full access, real user impersonation, and Dev Tools.
 - Impersonation: real login as target, sticky banner, return-to-dev, `dev_sessions` history (dev-only).

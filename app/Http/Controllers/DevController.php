@@ -14,6 +14,7 @@ use App\Models\ReportVersion;
 use App\Models\Task;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Services\NumberingService;
 use App\Services\ProgressService;
 use App\Services\UiWatermarkService;
 use Illuminate\Database\QueryException;
@@ -29,6 +30,13 @@ class DevController extends Controller
 {
     public function index()
     {
+        $section = request('section', 'overview');
+        $sections = ['overview', 'impersonation', 'maintenance', 'data', 'sync', 'logs', 'features', 'sql', 'numbering', 'watermark'];
+
+        if (! in_array($section, $sections, true)) {
+            $section = 'overview';
+        }
+
         $logFile = storage_path('logs/laravel.log');
         $logTail = File::exists($logFile) ? collect(File::lines($logFile))->take(-140)->implode("\n") : 'Belum ada log.';
 
@@ -58,21 +66,47 @@ class DevController extends Controller
         $devSessions = DevSession::with(['dev', 'target'])->latest()->take(20)->get();
         $users = User::orderBy('role')->orderBy('name')->get();
         $watermarkService = app(UiWatermarkService::class);
+        $numbering = app(NumberingService::class);
+
+        $numberingFormats = [];
+        $numberingPreviews = [];
+
+        foreach (array_keys(NumberingService::DEFAULTS) as $type) {
+            $numberingFormats[$type] = $numbering->format($type);
+            $numberingPreviews[$type] = $numbering->preview($type);
+        }
+
+        try {
+            $databaseVersion = DB::connection()->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
+        } catch (\Throwable $exception) {
+            $databaseVersion = 'unknown';
+        }
 
         return view('dev.index', [
+            'section' => $section,
+            'sections' => $sections,
+            'databaseInfo' => [
+                'driver' => config('database.default'),
+                'database' => DB::connection()->getDatabaseName(),
+                'version' => $databaseVersion,
+            ],
             'counts' => $counts,
             'logTail' => $logTail,
             'failedJobs' => $failedJobs,
             'routes' => $routes,
             'devSessions' => $devSessions,
             'users' => $users,
+            'numberingFormats' => $numberingFormats,
+            'numberingPreviews' => $numberingPreviews,
             'watermarkSettings' => [
                 'enabled' => $watermarkService->enabled(),
+                'login_enabled' => $watermarkService->loginEnabled(),
                 'line1' => $watermarkService->line1(),
                 'line2' => $watermarkService->line2(),
                 'opacity' => $watermarkService->opacity(),
                 'color' => $watermarkService->color(),
                 'speed' => $watermarkService->speed(),
+                'font_size' => $watermarkService->fontSize(),
             ],
             'watermarkPreview' => $watermarkService->payload(auth()->user(), request()),
             'environment' => [
@@ -283,23 +317,75 @@ class DevController extends Controller
         return back()->with('success', $label.' dihapus.');
     }
 
+    public function runQuery(Request $request, ActivityLogger $logger)
+    {
+        $data = $request->validate([
+            'sql' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $sql = trim($data['sql']);
+
+        if (! preg_match('/^(select|show|describe|desc|explain)\b/i', $sql)) {
+            return back()->withErrors(['sql' => 'Hanya query read-only: SELECT, SHOW, DESCRIBE, atau EXPLAIN.'])->withInput();
+        }
+
+        if (preg_match('/;\s*\S/', $sql)) {
+            return back()->withErrors(['sql' => 'Jalankan satu query per eksekusi.'])->withInput();
+        }
+
+        if (preg_match('/\b(into\s+(outfile|dumpfile)|load_file|benchmark|sleep\s*\(|for\s+update)\b/i', $sql)) {
+            return back()->withErrors(['sql' => 'Query mengandung operasi yang tidak diizinkan di SQL Runner.'])->withInput();
+        }
+
+        $started = microtime(true);
+
+        try {
+            $result = DB::select($sql);
+        } catch (\Throwable $exception) {
+            $logger->log('dev.sql_error', 'Developer gagal menjalankan query SQL', null, null, ['sql' => $sql, 'error' => $exception->getMessage()], [], [], 'warning');
+
+            return back()->withErrors(['sql' => $exception->getMessage()])->withInput();
+        }
+
+        $duration = round((microtime(true) - $started) * 1000, 1);
+        $total = count($result);
+        $rows = array_map(fn ($row) => (array) $row, array_slice($result, 0, 200));
+
+        session()->flash('sql_result', [
+            'sql' => $sql,
+            'columns' => $rows ? array_keys($rows[0]) : [],
+            'rows' => $rows,
+            'duration' => $duration,
+            'total' => $total,
+            'truncated' => $total > 200,
+        ]);
+
+        $logger->log('dev.sql_ran', 'Developer menjalankan query SQL read-only', null, null, ['sql' => $sql, 'rows' => $total], [], [], 'info');
+
+        return back()->with('success', 'Query selesai dalam '.$duration.' ms.');
+    }
+
     public function updateWatermark(Request $request)
     {
         $data = $request->validate([
             'enabled' => ['nullable', 'boolean'],
+            'login_enabled' => ['nullable', 'boolean'],
             'line1' => ['required', 'string', 'max:160'],
             'line2' => ['required', 'string', 'max:200'],
             'opacity' => ['required', 'numeric', 'min:0.01', 'max:0.5'],
             'color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'speed' => ['required', 'integer', 'min:10', 'max:300'],
+            'font_size' => ['required', 'integer', 'min:8', 'max:24'],
         ]);
 
         AppSetting::put('watermark.enabled', $request->boolean('enabled') ? '1' : '0');
+        AppSetting::put('watermark.login_enabled', $request->boolean('login_enabled') ? '1' : '0');
         AppSetting::put('watermark.line1', trim($data['line1']));
         AppSetting::put('watermark.line2', trim($data['line2']));
         AppSetting::put('watermark.opacity', number_format((float) $data['opacity'], 3, '.', ''));
         AppSetting::put('watermark.color', strtolower($data['color']));
         AppSetting::put('watermark.speed', (string) $data['speed']);
+        AppSetting::put('watermark.font_size', (string) $data['font_size']);
 
         return back()->with('success', 'Pengaturan watermark diperbarui.');
     }

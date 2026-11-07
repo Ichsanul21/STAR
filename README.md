@@ -71,10 +71,10 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Integrity dashboard + reconciliation command: `php artisan star:reconcile`.
 - Visitor/lead capture, event results.
 - PDF + Excel reports with Tiptap WYSIWYG narrative, drag/drop section ordering, and in-app HTML/PDF preview modal; publish, dealer portal (Honda theme).
-- Dynamic UI watermark (moving diagonal train) and static PDF report watermark with `{ip}`, `{device}`, `{timestamp}`, `{user}` tokens; dev-only on/off, opacity, color, speed, and text editing in Dev Tools.
+- Dynamic UI watermark (moving diagonal train) and static PDF report watermark with `{ip}`, `{device}`, `{timestamp}`, `{user}` tokens; dev-only on/off, opacity, color, speed, font size, login visibility, preset Halus/Standar/Tegas, and text editing in Dev Tools.
 - Event/division role policies, version-based conflict checks, and in-app notifications.
 - Realtime notification push via Laravel Reverb + Echo: private per-user WebSocket channel, queued after-commit broadcasts to the local Reverb API, live sidebar/popover counts, and toast on arrival; without Reverb configured it falls back to normal page loads.
-- Developer role (`dev@star.test`) with full bypass, real impersonation of any user (banner + return to Developer), Dev Tools (environment, logs, failed jobs, routes, dev sessions, force task status, unpublish report, hard delete, cache/reconcile), and database reseed/reset.
+- Developer role (`dev@star.test`) with full bypass, real impersonation of any user (banner + return to Developer), Developer Console (Ringkasan, Masuk Sebagai, Maintenance, Data, Sinkronisasi, Log, Fitur, read-only SQL Runner, Nomor, Watermark), force task status, unpublish report, hard delete, cache/reconcile, and database reseed/reset.
 - Developer activity is hidden from non-developer audit logs; impersonated actions are recorded as the target user.
 - Env switches: `DEV_TOOLS_ENABLED`, `DEV_IMPERSONATION_ENABLED`, `DEV_ALLOW_RESET`. All default off outside local/testing; when off, dev routes 404 and the dev account cannot log in.
 

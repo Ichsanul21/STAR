@@ -15,6 +15,8 @@ class UiWatermarkService
         'opacity' => '0.065',
         'color' => '#0a2540',
         'speed' => '70',
+        'font_size' => '12',
+        'login_enabled' => '0',
     ];
 
     public function enabled(): bool
@@ -49,6 +51,16 @@ class UiWatermarkService
         return min(300, max(10, (int) AppSetting::get('watermark.speed', self::DEFAULTS['speed'])));
     }
 
+    public function fontSize(): int
+    {
+        return min(24, max(8, (int) AppSetting::get('watermark.font_size', self::DEFAULTS['font_size'])));
+    }
+
+    public function loginEnabled(): bool
+    {
+        return AppSetting::get('watermark.login_enabled', '0') === '1';
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -63,6 +75,8 @@ class UiWatermarkService
             'opacity' => $this->opacity(),
             'color' => $this->color(),
             'speed' => $this->speed(),
+            'font_size' => $this->fontSize(),
+            'login_enabled' => $this->loginEnabled(),
             'context' => $context,
         ];
     }
