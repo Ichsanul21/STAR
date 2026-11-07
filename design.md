@@ -516,3 +516,10 @@ Don't:
 - `number_sequences` holds locked counters per type + scope; existing numbers are skipped on collision.
 - Invoice/report sequences are per event when the format includes `{event}`, otherwise per period; event codes are per month, SPK per event.
 - Report numbers appear in the reports list, preview/PDF cover, portal, and downloaded filenames; old reports fall back to `v{version}`.
+
+## 26. Dynamic watermark
+
+- Dev Tools controls `watermark.enabled`, `watermark.line1`, `watermark.line2` in `app_settings`.
+- Line 1 defaults to `Copyright of Alenkosa - Your IT Solutions`; line 2 supports `{ip}`, `{device}`, `{timestamp}`, `{user}` (plus `$IP_Address`, `$Devices`, `$Timestamps`, `$User` aliases).
+- App UI renders 7 diagonal bands of repeating two-line tiles, animated as a continuous train; fixed overlay, low opacity, no pointer events, z-index below sidebar/topbar/modals.
+- PDF reports render a static diagonal repeating watermark on every page using the watermark context captured when the report is generated (stored in the report snapshot).

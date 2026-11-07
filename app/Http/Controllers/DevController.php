@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\AppSetting;
 use App\Models\ClientInvoice;
 use App\Models\Dealer;
 use App\Models\DevSession;
@@ -14,6 +15,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Services\ActivityLogger;
 use App\Services\ProgressService;
+use App\Services\UiWatermarkService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -55,6 +57,7 @@ class DevController extends Controller
 
         $devSessions = DevSession::with(['dev', 'target'])->latest()->take(20)->get();
         $users = User::orderBy('role')->orderBy('name')->get();
+        $watermarkService = app(UiWatermarkService::class);
 
         return view('dev.index', [
             'counts' => $counts,
@@ -63,6 +66,12 @@ class DevController extends Controller
             'routes' => $routes,
             'devSessions' => $devSessions,
             'users' => $users,
+            'watermarkSettings' => [
+                'enabled' => $watermarkService->enabled(),
+                'line1' => $watermarkService->line1(),
+                'line2' => $watermarkService->line2(),
+            ],
+            'watermarkPreview' => $watermarkService->payload(auth()->user(), request()),
             'environment' => [
                 'app_env' => config('app.env'),
                 'debug' => config('app.debug') ? 'true' : 'false',
@@ -269,6 +278,21 @@ class DevController extends Controller
         }
 
         return back()->with('success', $label.' dihapus.');
+    }
+
+    public function updateWatermark(Request $request)
+    {
+        $data = $request->validate([
+            'enabled' => ['nullable', 'boolean'],
+            'line1' => ['required', 'string', 'max:160'],
+            'line2' => ['required', 'string', 'max:200'],
+        ]);
+
+        AppSetting::put('watermark.enabled', $request->boolean('enabled') ? '1' : '0');
+        AppSetting::put('watermark.line1', trim($data['line1']));
+        AppSetting::put('watermark.line2', trim($data['line2']));
+
+        return back()->with('success', 'Pengaturan watermark diperbarui.');
     }
 
     private function validateConfirmation(Request $request, string $expected): void

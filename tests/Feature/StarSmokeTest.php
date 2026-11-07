@@ -669,6 +669,50 @@ class StarSmokeTest extends TestCase
         $this->actingAs($finance)->patch('/settings/numbering', $formats)->assertForbidden();
     }
 
+    public function test_dev_can_configure_ui_watermark_and_it_is_stored_in_report_snapshot(): void
+    {
+        config(['app.dev_tools' => true]);
+
+        $dev = User::where('email', 'dev@star.test')->firstOrFail();
+        $admin = User::where('email', 'admin@star.test')->firstOrFail();
+        $event = Event::firstOrFail();
+
+        $this->actingAs($dev)->get('/dev')
+            ->assertOk()
+            ->assertSee('Watermark UI & PDF', false);
+
+        $this->actingAs($dev)->post('/dev/watermark', [
+            'enabled' => '1',
+            'line1' => 'Copyright Test Alenkosa',
+            'line2' => '{ip} - {user}',
+        ])->assertRedirect();
+
+        $this->assertSame('1', AppSetting::get('watermark.enabled'));
+
+        $this->actingAs($admin)->get('/dashboard')
+            ->assertOk()
+            ->assertSee('app-watermark', false)
+            ->assertSee('Copyright Test Alenkosa');
+
+        $report = app(ReportService::class)->generate($event, $admin);
+
+        $this->assertTrue($report->snapshot['watermark']['enabled']);
+        $this->assertSame('Copyright Test Alenkosa', $report->snapshot['watermark']['line1']);
+    }
+
+    public function test_non_dev_cannot_update_watermark(): void
+    {
+        config(['app.dev_tools' => true]);
+
+        $finance = User::where('email', 'finance@star.test')->firstOrFail();
+
+        $this->actingAs($finance)->post('/dev/watermark', [
+            'enabled' => '1',
+            'line1' => 'Nope',
+            'line2' => '{user}',
+        ])->assertForbidden();
+    }
+
     public function test_super_admin_can_create_dealer_and_user(): void
     {
         $admin = User::where('email', 'admin@star.test')->firstOrFail();

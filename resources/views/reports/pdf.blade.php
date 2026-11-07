@@ -35,11 +35,56 @@
         .footer { margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 8px; font-size: 8px; color: #64748b; }
         .sign { width: 100%; margin-top: 30px; border-collapse: collapse; }
         .sign td { width: 33%; text-align: center; padding-top: 40px; border-top: 1px solid #94a3b8; font-size: 9px; }
+        .pdf-watermark {
+            position: fixed;
+            top: -90px;
+            left: -150px;
+            z-index: 999;
+            width: 1100px;
+            opacity: 0.07;
+            color: #0a2540;
+            transform: rotate(-28deg);
+        }
+        .pdf-wm-row {
+            position: absolute;
+            left: 0;
+            width: 1400px;
+            white-space: nowrap;
+        }
+        .pdf-wm-item {
+            display: inline-block;
+            margin-right: 44px;
+            vertical-align: top;
+        }
+        .pdf-wm-line1 {
+            display: block;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .pdf-wm-line2 {
+            display: block;
+            font-size: 8px;
+        }
     </style>
 </head>
 <body>
     @foreach ($sectionOrder as $section)
         @includeIf('reports.partials.'.$section)
     @endforeach
+
+    @if (! empty($watermark['enabled']))
+        <div class="pdf-watermark">
+            @for ($row = 0; $row < 13; $row++)
+                <div class="pdf-wm-row" style="top: {{ $row * 105 }}px">
+                    @for ($col = 0; $col < 4; $col++)
+                        <span class="pdf-wm-item">
+                            <span class="pdf-wm-line1">{{ $watermark['line1'] }}</span>
+                            <span class="pdf-wm-line2">{{ $watermark['line2'] }}</span>
+                        </span>
+                    @endfor
+                </div>
+            @endfor
+        </div>
+    @endif
 </body>
 </html>

@@ -28,8 +28,11 @@ class ReportService
         'signoff' => 'Sign-off',
     ];
 
-    public function __construct(private FinanceService $finance, private NumberingService $numbering)
-    {
+    public function __construct(
+        private FinanceService $finance,
+        private NumberingService $numbering,
+        private UiWatermarkService $watermark,
+    ) {
     }
 
     public function generate(Event $event, User $user, array $narrative = []): ReportVersion
@@ -62,6 +65,7 @@ class ReportService
             'media' => $event->media->count(),
             'visitors' => $event->visitors->count(),
             'result' => $event->result?->toArray(),
+            'watermark' => $this->watermark->payload($user, request()),
         ];
 
         $previousNarrative = $event->reports()->latest('version')->first()?->narrative ?? [];
@@ -143,6 +147,7 @@ class ReportService
             'invoices' => $event->invoices,
             'sectionOrder' => $sectionOrder ?: array_keys(self::SECTIONS),
             'sectionLabels' => self::SECTIONS,
+            'watermark' => $snapshot['watermark'] ?? ['enabled' => false, 'line1' => '', 'line2' => ''],
         ];
     }
 

@@ -33,6 +33,53 @@
     @endforeach
 </div>
 
+<div class="mt-4 card card-pad">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+            <div class="section-title">Watermark UI & PDF</div>
+            <div class="mt-1 text-xs" style="color: var(--muted)">
+                Watermark diagonal untuk halaman aplikasi dan PDF report. PDF memakai teks statis saat report digenerate.
+            </div>
+        </div>
+        <span class="badge badge-brand">{{ $watermarkSettings['enabled'] ? 'Aktif' : 'Nonaktif' }}</span>
+    </div>
+
+    <form method="POST" action="{{ route('dev.watermark') }}" class="mt-4 space-y-3">
+        @csrf
+        <input type="hidden" name="enabled" value="0">
+        <label class="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="enabled" value="1" @checked($watermarkSettings['enabled'])>
+            <span>Aktifkan watermark</span>
+        </label>
+
+        <div class="grid gap-3 lg:grid-cols-2">
+            <div>
+                <label class="label" for="watermarkLine1">Baris 1</label>
+                <input id="watermarkLine1" name="line1" class="input" maxlength="160" required value="{{ old('line1', $watermarkSettings['line1']) }}">
+            </div>
+            <div>
+                <label class="label" for="watermarkLine2">Baris 2</label>
+                <input id="watermarkLine2" name="line2" class="input" maxlength="200" required value="{{ old('line2', $watermarkSettings['line2']) }}">
+            </div>
+        </div>
+
+        <div class="rounded-xl px-3 py-2 text-[11px]" style="background: var(--brand-soft); color: var(--muted)">
+            Token: <span class="font-mono">{ip}</span>, <span class="font-mono">{device}</span>,
+            <span class="font-mono">{timestamp}</span>, <span class="font-mono">{user}</span>.
+            Alias: <span class="font-mono">$IP_Address</span>, <span class="font-mono">$Devices</span>,
+            <span class="font-mono">$Timestamps</span>, <span class="font-mono">$User</span>.
+        </div>
+
+        <div class="rounded-xl border px-3 py-2" style="border-color: var(--border)">
+            <div class="text-[10px] font-bold uppercase tracking-wide" style="color: var(--muted)">Preview</div>
+            <div class="mt-1 text-xs font-bold">{{ $watermarkPreview['line1'] }}</div>
+            <div class="text-[11px]" style="color: var(--muted)">{{ $watermarkPreview['line2'] }}</div>
+        </div>
+
+        <button class="btn btn-primary btn-sm" type="submit">Simpan Watermark</button>
+    </form>
+</div>
+
 <div class="mt-4 grid gap-4 xl:grid-cols-2">
     <div class="card">
         <div class="border-b px-5 py-4" style="border-color: var(--border)">

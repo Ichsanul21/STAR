@@ -2832,3 +2832,50 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     font-variant-numeric: tabular-nums;
     text-align: right;
 }
+
+/* Moving diagonal UI watermark */
+.app-watermark {
+    position: fixed;
+    inset: -30%;
+    z-index: 15;
+    overflow: hidden;
+    opacity: 0.065;
+    pointer-events: none;
+    user-select: none;
+    transform: rotate(-24deg);
+}
+.app-watermark-band {
+    position: absolute;
+    left: 0;
+    top: calc(var(--band) * 185px - 160px);
+    display: flex;
+    width: max-content;
+    gap: 56px;
+    will-change: transform;
+    animation: watermark-train 70s linear infinite;
+}
+.app-watermark-item {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--brand);
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.app-watermark-line1 {
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
+.app-watermark-line2 {
+    font-size: 10px;
+    font-weight: 700;
+}
+@keyframes watermark-train {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(-16.6667%, 0, 0);
+    }
+}

@@ -671,6 +671,13 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 @endauth
 
+@auth
+    @php($uiWatermark = app(\App\Services\UiWatermarkService::class)->payload(auth()->user(), request()))
+    @if ($uiWatermark['enabled'])
+        <x-ui-watermark :line1="$uiWatermark['line1']" :line2="$uiWatermark['line2']" />
+    @endif
+@endauth
+
 <x-preview-modal />
 @stack('scripts')
 </body>

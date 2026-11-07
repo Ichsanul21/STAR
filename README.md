@@ -71,6 +71,7 @@ Seed data includes 3 dealers and 3 integrated events: Jakarta (active), Bandung 
 - Integrity dashboard + reconciliation command: `php artisan star:reconcile`.
 - Visitor/lead capture, event results.
 - PDF + Excel reports with Tiptap WYSIWYG narrative, drag/drop section ordering, and in-app HTML/PDF preview modal; publish, dealer portal (Honda theme).
+- Dynamic UI watermark (moving diagonal train) and static PDF report watermark with `{ip}`, `{device}`, `{timestamp}`, `{user}` tokens; dev-only on/off and text editing in Dev Tools.
 - Event/division role policies, version-based conflict checks, and in-app notifications.
 - Realtime notification push via Laravel Reverb + Echo: private per-user WebSocket channel, queued after-commit broadcasts to the local Reverb API, live sidebar/popover counts, and toast on arrival; without Reverb configured it falls back to normal page loads.
 - Developer role (`dev@star.test`) with full bypass, real impersonation of any user (banner + return to Developer), Dev Tools (environment, logs, failed jobs, routes, dev sessions, force task status, unpublish report, hard delete, cache/reconcile), and database reseed/reset.
