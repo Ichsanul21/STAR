@@ -9,7 +9,7 @@
             <div class="section-title">Pilih user</div>
             <div class="text-xs" style="color: var(--muted)">Masuk sebagai user lain, lalu kembali ke Developer kapan saja.</div>
         </div>
-        <div class="max-h-[420px] overflow-y-auto">
+        <div class="max-h-[420px] overflow-auto">
             <table class="table">
                 <thead><tr><th>User</th><th>Role</th><th></th></tr></thead>
                 <tbody>
@@ -45,7 +45,7 @@
             <div class="section-title">Dev sessions</div>
             <div class="text-xs" style="color: var(--muted)">Riwayat impersonation (hanya terlihat oleh Developer).</div>
         </div>
-        <div class="max-h-[420px] overflow-y-auto">
+        <div class="max-h-[420px] overflow-auto">
             <table class="table">
                 <thead><tr><th>Developer</th><th>Target</th><th>Mulai</th><th>Selesai</th></tr></thead>
                 <tbody>

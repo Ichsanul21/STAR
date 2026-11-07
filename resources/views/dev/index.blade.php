@@ -48,7 +48,7 @@
         </div>
     </aside>
 
-    <div class="min-w-0">
+    <div class="min-w-0 dev-console-body">
         @include('dev.partials.'.$section)
     </div>
 </div>
@@ -73,7 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
         track.hidden = false;
 
         const ratio = nav.clientWidth / nav.scrollWidth;
-        const thumbWidth = Math.max(24, Math.round(track.clientWidth * ratio));
+        const proportional = track.clientWidth * ratio;
+        const maxThumb = Math.max(24, Math.min(72, Math.round(window.innerWidth * 0.12)));
+        const thumbWidth = Math.max(24, Math.min(proportional, maxThumb));
         const maxScroll = Math.max(1, nav.scrollWidth - nav.clientWidth);
         const maxLeft = Math.max(0, track.clientWidth - thumbWidth);
         const left = Math.round((nav.scrollLeft / maxScroll) * maxLeft);
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const active = nav.querySelector('.dev-console-link.is-active');
     if (active && mobile.matches) {
-        nav.scrollLeft = Math.max(0, active.offsetLeft - 12);
+        nav.scrollLeft = Math.max(0, active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2);
     }
 
     nav.addEventListener('scroll', update, { passive: true });

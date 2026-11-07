@@ -3039,3 +3039,53 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     font-size: 10px;
     font-weight: 500;
 }
+
+/* Developer Console responsive body */
+.dev-console-head,
+.dev-console-nav,
+.dev-console-body {
+    min-width: 0;
+    max-width: 100%;
+}
+.dev-console-nav-links {
+    min-width: 0;
+    max-width: 100%;
+}
+.dev-console-body {
+    container-type: inline-size;
+}
+.dev-console-body .card {
+    min-width: 0;
+}
+.dev-console-body .table {
+    width: 100%;
+}
+.dev-console-body .btn {
+    white-space: normal;
+}
+@container (max-width: 760px) {
+    .dev-console-body .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+@media (max-width: 1023.98px) {
+    .dev-console-body .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+@media (max-width: 767.98px) {
+    .dev-console-head {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+    .dev-console-title {
+        font-size: 1.15rem;
+    }
+    .dev-mode-card {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+        text-align: left;
+    }
+}
