@@ -2882,16 +2882,21 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
 
 /* Developer Console */
 .dev-console-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
     gap: 14px;
     padding: 16px 20px;
     border: 1px solid var(--border);
     border-radius: 20px;
     background: #fff;
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+.dev-console-title {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
 }
 .dev-console-mark {
     display: grid;
@@ -2923,10 +2928,32 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
 .dev-console-nav {
     position: sticky;
     top: 18px;
+    padding: 8px;
+}
+.dev-console-nav-links {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 8px;
+}
+.dev-console-nav-track {
+    position: absolute;
+    right: 8px;
+    bottom: 3px;
+    left: 8px;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--sidebar-line);
+}
+.dev-console-nav-track[hidden] {
+    display: none;
+}
+.dev-console-nav-thumb {
+    display: block;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--brand);
+    transition: transform .05s linear;
 }
 .dev-console-link {
     display: flex;
@@ -2948,14 +2975,41 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     color: #fff;
 }
 @media (max-width: 767.98px) {
+    .dev-console-head {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 14px;
+    }
+    .dev-mode-card {
+        min-width: 82px;
+        padding: 7px 10px;
+    }
+    .dev-console-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
     .dev-console-nav {
-        position: static;
+        position: relative;
+        padding: 8px 8px 12px;
+    }
+    .dev-console-nav-links {
         flex-direction: row;
-        flex-wrap: wrap;
-        overflow: visible;
+        flex-wrap: nowrap;
+        gap: 2px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+    .dev-console-nav-links::-webkit-scrollbar {
+        width: 0;
+        height: 0;
     }
     .dev-console-link {
         flex: none;
+    }
+    .dev-console-nav-track {
+        display: block;
     }
 }
 
