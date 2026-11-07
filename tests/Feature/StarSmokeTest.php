@@ -685,9 +685,15 @@ class StarSmokeTest extends TestCase
             'enabled' => '1',
             'line1' => 'Copyright Test Alenkosa',
             'line2' => '{ip} - {user}',
+            'opacity' => '0.120',
+            'color' => '#123456',
+            'speed' => '45',
         ])->assertRedirect();
 
         $this->assertSame('1', AppSetting::get('watermark.enabled'));
+        $this->assertSame('0.120', AppSetting::get('watermark.opacity'));
+        $this->assertSame('#123456', AppSetting::get('watermark.color'));
+        $this->assertSame('45', AppSetting::get('watermark.speed'));
 
         $this->actingAs($admin)->get('/dashboard')
             ->assertOk()
@@ -710,6 +716,9 @@ class StarSmokeTest extends TestCase
             'enabled' => '1',
             'line1' => 'Nope',
             'line2' => '{user}',
+            'opacity' => '0.1',
+            'color' => '#000000',
+            'speed' => '60',
         ])->assertForbidden();
     }
 

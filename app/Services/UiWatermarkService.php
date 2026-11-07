@@ -12,6 +12,9 @@ class UiWatermarkService
     public const DEFAULTS = [
         'line1' => 'Copyright of Alenkosa - Your IT Solutions',
         'line2' => '{ip} - {device} - {timestamp} - {user}',
+        'opacity' => '0.065',
+        'color' => '#0a2540',
+        'speed' => '70',
     ];
 
     public function enabled(): bool
@@ -29,6 +32,23 @@ class UiWatermarkService
         return AppSetting::get('watermark.line2', self::DEFAULTS['line2']) ?: self::DEFAULTS['line2'];
     }
 
+    public function opacity(): float
+    {
+        return min(0.5, max(0.01, (float) AppSetting::get('watermark.opacity', self::DEFAULTS['opacity'])));
+    }
+
+    public function color(): string
+    {
+        $color = AppSetting::get('watermark.color', self::DEFAULTS['color']) ?: self::DEFAULTS['color'];
+
+        return preg_match('/^#[0-9a-f]{6}$/i', $color) ? $color : self::DEFAULTS['color'];
+    }
+
+    public function speed(): int
+    {
+        return min(300, max(10, (int) AppSetting::get('watermark.speed', self::DEFAULTS['speed'])));
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -40,6 +60,9 @@ class UiWatermarkService
             'enabled' => $this->enabled(),
             'line1' => $this->replace($this->line1(), $context),
             'line2' => $this->replace($this->line2(), $context),
+            'opacity' => $this->opacity(),
+            'color' => $this->color(),
+            'speed' => $this->speed(),
             'context' => $context,
         ];
     }

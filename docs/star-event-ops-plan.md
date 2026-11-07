@@ -545,7 +545,7 @@ Replace the "Current state" and planned commands with verified commands, and add
 - Jira-like Gantt: zoom levels, today marker, weekend shading, sticky task column, click-to-edit modal, and S-Curve (planned vs actual).
 - Master Data can create dealers/users (Super Admin); Settings covers profile, password, app info, and EO Admin auto-numbering formats for event/invoice/SPK/report.
 - Auto-numbering uses locked `number_sequences`, configurable token formats, and collision skipping; report numbers appear on the report list, PDF cover, portal, and filenames.
-- Dynamic UI/PDF watermark uses `app_settings` and is configured in Dev Tools; PDF snapshots keep the watermark context captured at generation time.
+- Dynamic UI/PDF watermark uses `app_settings` and is configured in Dev Tools (on/off, text, opacity, color, speed); PDF snapshots keep the watermark context captured at generation time.
 
 ## 18. Remaining backlog
 

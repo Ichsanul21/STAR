@@ -70,6 +70,9 @@ class DevController extends Controller
                 'enabled' => $watermarkService->enabled(),
                 'line1' => $watermarkService->line1(),
                 'line2' => $watermarkService->line2(),
+                'opacity' => $watermarkService->opacity(),
+                'color' => $watermarkService->color(),
+                'speed' => $watermarkService->speed(),
             ],
             'watermarkPreview' => $watermarkService->payload(auth()->user(), request()),
             'environment' => [
@@ -286,11 +289,17 @@ class DevController extends Controller
             'enabled' => ['nullable', 'boolean'],
             'line1' => ['required', 'string', 'max:160'],
             'line2' => ['required', 'string', 'max:200'],
+            'opacity' => ['required', 'numeric', 'min:0.01', 'max:0.5'],
+            'color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'speed' => ['required', 'integer', 'min:10', 'max:300'],
         ]);
 
         AppSetting::put('watermark.enabled', $request->boolean('enabled') ? '1' : '0');
         AppSetting::put('watermark.line1', trim($data['line1']));
         AppSetting::put('watermark.line2', trim($data['line2']));
+        AppSetting::put('watermark.opacity', number_format((float) $data['opacity'], 3, '.', ''));
+        AppSetting::put('watermark.color', strtolower($data['color']));
+        AppSetting::put('watermark.speed', (string) $data['speed']);
 
         return back()->with('success', 'Pengaturan watermark diperbarui.');
     }

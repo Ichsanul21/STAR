@@ -519,7 +519,7 @@ Don't:
 
 ## 26. Dynamic watermark
 
-- Dev Tools controls `watermark.enabled`, `watermark.line1`, `watermark.line2` in `app_settings`.
+- Dev Tools controls `watermark.enabled`, `watermark.line1`, `watermark.line2`, `watermark.opacity`, `watermark.color`, and `watermark.speed` in `app_settings`.
 - Line 1 defaults to `Copyright of Alenkosa - Your IT Solutions`; line 2 supports `{ip}`, `{device}`, `{timestamp}`, `{user}` (plus `$IP_Address`, `$Devices`, `$Timestamps`, `$User` aliases).
-- App UI renders 7 diagonal bands of repeating two-line tiles, animated as a continuous train; fixed overlay, low opacity, no pointer events, z-index below sidebar/topbar/modals.
-- PDF reports render a static diagonal repeating watermark on every page using the watermark context captured when the report is generated (stored in the report snapshot).
+- App UI renders 7 diagonal bands of repeating two-line tiles, animated as a continuous train; fixed overlay, configurable opacity/color/speed, no pointer events, z-index below sidebar/topbar/modals.
+- PDF reports render a static diagonal repeating watermark on every page using the watermark context captured when the report is generated (stored in the report snapshot); PDF uses the configured opacity and color (speed is UI-only).

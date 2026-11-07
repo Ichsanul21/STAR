@@ -2839,7 +2839,7 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     inset: -30%;
     z-index: 15;
     overflow: hidden;
-    opacity: 0.065;
+    opacity: var(--watermark-opacity, 0.065);
     pointer-events: none;
     user-select: none;
     transform: rotate(-24deg);
@@ -2858,7 +2858,7 @@ html[data-sidebar-collapsed] .sidebar-scroll-thumb {
     display: inline-flex;
     flex-direction: column;
     gap: 2px;
-    color: var(--brand);
+    color: var(--watermark-color, var(--brand));
     font-weight: 800;
     line-height: 1.2;
     white-space: nowrap;

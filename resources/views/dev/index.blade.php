@@ -61,6 +61,18 @@
                 <label class="label" for="watermarkLine2">Baris 2</label>
                 <input id="watermarkLine2" name="line2" class="input" maxlength="200" required value="{{ old('line2', $watermarkSettings['line2']) }}">
             </div>
+            <div>
+                <label class="label" for="watermarkOpacity">Opacity (0.01 – 0.50)</label>
+                <input id="watermarkOpacity" name="opacity" type="number" step="0.005" min="0.01" max="0.5" class="input" required value="{{ old('opacity', $watermarkSettings['opacity']) }}">
+            </div>
+            <div>
+                <label class="label" for="watermarkColor">Warna</label>
+                <input id="watermarkColor" name="color" type="color" class="input h-11" required value="{{ old('color', $watermarkSettings['color']) }}">
+            </div>
+            <div>
+                <label class="label" for="watermarkSpeed">Speed / durasi loop (detik)</label>
+                <input id="watermarkSpeed" name="speed" type="number" min="10" max="300" class="input" required value="{{ old('speed', $watermarkSettings['speed']) }}">
+            </div>
         </div>
 
         <div class="rounded-xl px-3 py-2 text-[11px]" style="background: var(--brand-soft); color: var(--muted)">
@@ -72,8 +84,8 @@
 
         <div class="rounded-xl border px-3 py-2" style="border-color: var(--border)">
             <div class="text-[10px] font-bold uppercase tracking-wide" style="color: var(--muted)">Preview</div>
-            <div class="mt-1 text-xs font-bold">{{ $watermarkPreview['line1'] }}</div>
-            <div class="text-[11px]" style="color: var(--muted)">{{ $watermarkPreview['line2'] }}</div>
+            <div class="mt-1 text-xs font-bold" style="color: {{ $watermarkPreview['color'] }}; opacity: {{ $watermarkPreview['opacity'] }}">{{ $watermarkPreview['line1'] }}</div>
+            <div class="text-[11px]" style="color: {{ $watermarkPreview['color'] }}; opacity: {{ $watermarkPreview['opacity'] }}">{{ $watermarkPreview['line2'] }}</div>
         </div>
 
         <button class="btn btn-primary btn-sm" type="submit">Simpan Watermark</button>
